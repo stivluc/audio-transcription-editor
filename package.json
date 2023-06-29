@@ -1,6 +1,6 @@
 {
-  "name": " audio-transcription-editor",
-  "version": "0.0.0",
+  "name": "audio-transcription-editor",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "vite",
