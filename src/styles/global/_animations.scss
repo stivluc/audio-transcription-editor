@@ -1,0 +1,109 @@
+$transition_speed_quick: 0.3s;
+$transition_speed_mid: 0.6s;
+$transition_speed_slow: 0.7s;
+
+$delay_slight: 0.5s;
+$delay_mid: 1s;
+$delay_slow: 3s;
+
+$transition_speed: $transition_speed_quick;
+
+/* DEFINE THE ANIMATION KEYFRAMES */
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes flyin_R {
+    0% {
+        transform: translateX(50%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes flyout_R {
+    0% {
+        transform: translateX(0);
+        // right:0;
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(50%);
+        // right: 100%;
+        opacity: 0;
+    }
+}
+
+@keyframes expand {
+    0% {
+        transform: scaleX(0);
+        // width:0;
+    }
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes collapse {
+    0% {
+        transform: scaleX(1);
+    }
+    100% {
+        transform: scaleX(0);
+        // width: 0;
+    }
+}
+
+@keyframes expand_vert {
+    0% {
+        transform: scaleY(0);
+        // height: 0;
+    }
+    100% {
+        transform: scaleY(1);
+    }
+}
+
+@keyframes collapse_vert {
+    0% {
+        transform: scaleY(1);
+    }
+    100% {
+        // height: 0;
+        transform: scaleY(0);
+    }
+}
+
+/* ***********************************
+    DEFINE THE DEFAULT ANIMATIONS  
+*********************************** */
+
+$anim_fadein: fadein $transition_speed ease forwards;
+$anim_fadeout: fadeout $transition_speed ease forwards;
+
+$anim_flyin_R: flyin_R $transition_speed ease forwards;
+$anim_flyout_R: flyout_R $transition_speed ease forwards;
+
+$anim_expand: expand $transition_speed ease forwards;
+$anim_collapse: collapse $transition_speed ease forwards;
+
+$anim_expand_vert: expand_vert $transition_speed ease forwards;
+$anim_collapse_vert: collapse_vert $transition_speed ease forwards;

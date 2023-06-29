@@ -63,24 +63,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.transcription-container {
-  height: 300px;
-  overflow-y: auto;
-  margin-top: 20px;
-}
-
-.transcription-content {
-  padding: 10px;
-}
-
-.highlighted-word {
-  background-color: yellow;
-  cursor: pointer;
-}
-
-button {
-  margin: 5px;
-}
-</style>

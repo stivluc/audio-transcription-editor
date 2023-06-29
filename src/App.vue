@@ -19,19 +19,3 @@ export default {
   }
 }
 </script>
-
-<style>
-#app {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.highlighted-word {
-  background-color: yellow;
-  cursor: pointer;
-}
-
-button {
-  margin: 5px;
-}
-</style>

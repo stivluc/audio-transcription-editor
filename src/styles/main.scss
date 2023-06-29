@@ -1,0 +1,15 @@
+@import 'normalize';
+@import 'global';
+
+// browser reset
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+// import structural layout
+@import 'layout';
+
+// import styling theme
+@import 'theme';

@@ -1,0 +1,12 @@
+// file used to import global varibles/mixins that are to be made accessible to the
+// entire Vue application
+@import "animations";
+@import "variables";
+@import "mixins";
+
+
+/***************************** NOTE *****************************/
+/*
+    Keep in mind that anything defined in global is subject to be
+    overwritten by custom themes 
+*/

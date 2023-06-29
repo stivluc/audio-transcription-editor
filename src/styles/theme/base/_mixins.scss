@@ -1,0 +1,18 @@
+@mixin rounded {
+    border-radius: $rounding;
+}
+
+@mixin shadow {
+    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.25);
+}
+
+@mixin shadow_inset {
+    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+@mixin shadow_dark {
+    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.5);
+}
+@mixin shadow_dark_inset {
+    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.5) insets;
+}
