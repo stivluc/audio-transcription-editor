@@ -5,16 +5,18 @@
         <PlayButton :playing="playing" @togglePlayback="togglePlayback" />
         <StopButton @stop="stop" />
         <div id="seek" style="width: 100%">
-          <div class="player-timeline">
-            <div :style="progressStyle" class="player-progress"></div>
-            <div
-              @click="seek"
-              @mouseenter="hovering = true"
-              @mousemove="preview"
-              @mouseleave="hovering = false"
-              class="player-seeker"
-              title="Seek"
-            ></div>
+          <div class="player-timeline-wrapper">
+            <div class="player-timeline">
+              <div :style="progressStyle" class="player-progress"></div>
+              <div
+                @click="seek"
+                @mouseenter="hovering = true"
+                @mousemove="preview"
+                @mouseleave="hovering = false"
+                class="player-seeker"
+                title="Seek"
+              ></div>
+            </div>
           </div>
           <div class="player-time">
             <div class="player-time-current">{{ formattedCurrentTime }}</div>
