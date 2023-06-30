@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
+
 #app {
   display: grid;
   // grid-template-columns: 1fr 1fr;
@@ -7,7 +9,7 @@
     'header'
     'content';
 
-  background-color: #fafafa;
+  background-color: #f1f1f1;
   width: 100vw;
   min-height: 100vh;
 }
@@ -17,6 +19,10 @@ body {
   flex-direction: row;
   flex: 1;
   align-items: stretch;
+  font-family: 'Montserrat', sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 header {

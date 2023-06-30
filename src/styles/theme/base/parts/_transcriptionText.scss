@@ -1,8 +1,17 @@
-.transcription {
-  /* Add any desired styling for the transcription container */
+.transcription-container {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 1rem;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
 }
 
-.transcription-text {
+.transcription-content {
   white-space: pre-line;
-  /* Add any desired styling for the transcription text */
+  text-align: justify;
+  text-justify: inter-word;
+
+  font-family: 'Roboto', monospace;
+  line-height: 2;
+  font-size: large;
 }
