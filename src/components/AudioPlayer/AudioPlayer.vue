@@ -21,7 +21,7 @@
           <div class="player-time">
             <div class="player-time-current">{{ formattedCurrentTime }}</div>
             <div class="player-title">
-              <p>dgqdrgedgdrg</p>
+              <p>{{ title }}</p>
             </div>
             <div class="player-time-total">{{ formattedDuration }}</div>
           </div>
@@ -100,21 +100,21 @@ export default {
       previousVolume: 35,
       showVolume: false,
       hovering: false,
-      volume: 100
+      volume: 100,
+      title: '',
+      timer: null
     }
   },
   methods: {
     loadAudio() {
       this.audio = new Audio()
       this.audio.src = this.audioSrc
+      this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
+
       this.audio.addEventListener('loadeddata', () => {
         this.durationSeconds = Math.floor(this.audio.duration)
         this.loaded = true
       })
-      this.audio.addEventListener(
-        'timeupdate',
-        () => (this.currentSeconds = this.audio.currentTime)
-      )
     },
     togglePlayback() {
       this.playing = !this.playing
@@ -129,8 +129,11 @@ export default {
       this.playing = false
       if (this.audio) {
         this.audio.currentTime = 0
+        this.currentSeconds = 0
+        this.$emit('currentTimeChange', this.audio.currentTime)
         this.audio.pause()
       }
+      clearInterval(this.timer)
     },
     seek(e) {
       if (!this.loaded) return
@@ -201,8 +204,13 @@ export default {
   watch: {
     playing(value) {
       if (value) {
+        this.timer = setInterval(() => {
+          this.currentSeconds = this.audio.currentTime
+          this.$emit('currentTimeChange', this.audio.currentTime)
+        }, 100)
         return this.audio.play()
       }
+      clearInterval(this.timer)
       this.audio.pause()
     },
     volume() {

@@ -2,18 +2,16 @@
   <div class="transcription-container">
     <div class="transcription-content">
       <p class="transcription-text">
-        <span v-for="(text, startTime) in transcriptions" :key="startTime">
-          <span
-            @click="selectWord(startTime)"
-            :class="{ 'highlighted-word': selectedWord === startTime }"
-          >
-            {{ text.trim() }}
-          </span>
-          <span>&nbsp;</span>
+        <span
+          v-for="(text, startTime) in transcriptionText"
+          :key="startTime"
+          :class="{ 'highlighted-word': isCurrentPart(text) }"
+        >
+          {{ text.trim() }}
+          <!-- <span>&nbsp;</span> -->
         </span>
       </p>
     </div>
-    <button @click="revertLastEdit" v-if="editedText">Revert Last Edit</button>
   </div>
 </template>
 
@@ -21,35 +19,26 @@
 import axios from 'axios'
 
 export default {
+  props: {
+    currentTime: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
-      transcriptions: {},
-      selectedWord: null,
-      editedText: ''
+      transcription: {},
+      transcriptionText: {}
     }
   },
   methods: {
-    selectWord(startTime) {
-      if (this.selectedWord === startTime) {
-        this.$refs.audioRef.currentTime = startTime
-        this.$refs.audioRef.play()
-      } else {
-        this.selectedWord = startTime
-        this.editedText = this.transcriptions[startTime]
-      }
-    },
-    revertLastEdit() {
-      if (this.selectedWord) {
-        this.editedText = ''
-        this.selectedWord = null
-      }
-    },
     loadTranscriptions() {
       axios
         .get('/data/Sample1_Transcription.json')
         .then((response) => {
           const jsonData = response.data
-          this.transcriptions = Object.keys(jsonData).reduce(
+          this.transcription = jsonData
+          this.transcriptionText = Object.keys(jsonData).reduce(
             (result, key) => ({
               ...result,
               [jsonData[key][0]]: key
@@ -60,6 +49,13 @@ export default {
         .catch((error) => {
           console.error('Error loading transcriptions:', error)
         })
+    },
+    isCurrentPart(text) {
+      const [startTime, endTime] = this.transcription[text]
+      if (this.currentTime >= startTime && this.currentTime < endTime && this.currentTime > 0) {
+        return true
+      }
+      return false
     }
   },
   mounted() {
