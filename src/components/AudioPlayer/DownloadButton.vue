@@ -1,8 +1,8 @@
 <template>
   <div id="download">
-    <a @click.prevent="handleClick" href="#" title="Download">
+    <span @click="handleClick" title="Download">
       <DownloadIcon />
-    </a>
+    </span>
   </div>
 </template>
 

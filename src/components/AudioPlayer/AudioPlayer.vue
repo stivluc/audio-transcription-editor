@@ -27,13 +27,11 @@
           </div>
         </div>
         <div id="volume">
-          <a
-            id="volume-a"
-            @click.prevent=""
+          <span
+            id="volume-span"
             @mouseenter="showVolume = true"
             @mouseleave="showVolume = false"
             :title="volumeTitle"
-            href="#"
           >
             <VolumeIcon />
             <input
@@ -44,13 +42,13 @@
               min="0"
               max="100"
             />
-          </a>
+          </span>
         </div>
         <div id="mute" v-show="!showVolume">
-          <a @click.prevent="mute" href="#" title="Mute">
+          <span @click="mute" title="Mute">
             <MuteIcon v-if="!muted" />
             <UnmuteIcon v-else />
-          </a>
+          </span>
         </div>
         <DownloadButton @download="download" v-show="!showVolume" />
       </div>

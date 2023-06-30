@@ -42,7 +42,7 @@ $player-timeline-color: $player-border-color;
       border-right: none;
     }
 
-    a {
+    span {
       color: $player-link-color;
       display: block;
       line-height: 0;
@@ -117,7 +117,7 @@ $player-timeline-color: $player-border-color;
   }
 }
 
-#volume-a {
+#volume-span {
   display: flex;
   align-items: center;
 }
@@ -126,4 +126,5 @@ $player-timeline-color: $player-border-color;
   height: 1.1rem;
   margin: 0 0 0 1rem;
   width: calc(6rem + 1px);
+  accent-color: $player-progress-color;
 }

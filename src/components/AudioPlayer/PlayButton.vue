@@ -1,9 +1,9 @@
 <template>
   <div id="play">
-    <a @click.prevent="handleClick" :title="playing ? 'Pause' : 'Play'" href="#">
+    <span @click="handleClick" :title="playing ? 'Pause' : 'Play'">
       <PlayIcon v-if="!playing" />
       <PauseIcon v-else />
-    </a>
+    </span>
   </div>
 </template>
 

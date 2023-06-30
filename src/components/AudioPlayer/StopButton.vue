@@ -1,8 +1,8 @@
 <template>
   <div id="stop">
-    <a @click.prevent="stop" title="Stop" href="#">
+    <span @click="stop" title="Stop">
       <StopIcon />
-    </a>
+    </span>
   </div>
 </template>
 
