@@ -5,21 +5,10 @@ $player-progress-color: $player-link-color;
 $player-text-color: $player-link-color;
 $player-timeline-color: $player-border-color;
 
-.player-wrapper {
-  display: flex;
-  width: 100%;
-  min-width: 100%;
-  border-radius: 0 0 1rem 1rem;
-
-  align-items: center;
-  background-color: $player-bg;
-  justify-content: center;
-}
-
 .player {
   background-color: $player-bg;
-  border-radius: 0 0 1rem 1rem;
-  margin: 0 1rem;
+  border-radius: 1rem;
+  margin: 1rem;
 
   border: 0 1px solid $player-border-color 1px solid $player-border-color;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
@@ -27,6 +16,17 @@ $player-timeline-color: $player-border-color;
   line-height: 1.5625;
   position: relative;
   padding: 0;
+}
+
+.player-wrapper {
+  display: flex;
+  width: 100%;
+  min-width: 100%;
+  border-radius: 1rem;
+
+  align-items: center;
+  background-color: $player-bg;
+  justify-content: center;
 }
 
 .player-controls {
@@ -91,6 +91,7 @@ $player-timeline-color: $player-border-color;
   .player-time-current {
     font-weight: 700;
     padding: 0 10px;
+    width: 50px;
   }
 
   .player-title {
@@ -105,12 +106,17 @@ $player-timeline-color: $player-border-color;
   .player-time-total {
     opacity: 0.8;
     padding: 0 10px;
+    min-width: 50px;
   }
 }
 
+#volume-a {
+  display: flex;
+  align-items: center;
+}
+
 .player-volume {
-  display: inline-block;
   height: 1.1rem;
-  margin: 0 0 0 2px;
-  width: 6rem;
+  margin: 0 0 0 1rem;
+  width: calc(6rem + 1px);
 }

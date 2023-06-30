@@ -7,7 +7,14 @@
         <div id="seek" style="width: 100%">
           <div class="player-timeline">
             <div :style="progressStyle" class="player-progress"></div>
-            <div @click="seek" class="player-seeker" title="Seek"></div>
+            <div
+              @click="seek"
+              @mouseenter="hovering = true"
+              @mousemove="preview"
+              @mouseleave="hovering = false"
+              class="player-seeker"
+              title="Seek"
+            ></div>
           </div>
           <div class="player-time">
             <div class="player-time-current">{{ formattedCurrentTime }}</div>
@@ -19,6 +26,7 @@
         </div>
         <div id="volume">
           <a
+            id="volume-a"
             @click.prevent=""
             @mouseenter="showVolume = true"
             @mouseleave="showVolume = false"
@@ -85,11 +93,13 @@ export default {
       audio: null,
       audioSrc: '/data/Sample1_Audio.wav',
       currentSeconds: 0,
+      currentPosition: 0,
       durationSeconds: 0,
       loaded: false,
       playing: false,
       previousVolume: 35,
       showVolume: false,
+      hovering: false,
       volume: 100
     }
   },
@@ -130,6 +140,12 @@ export default {
 
       this.audio.currentTime = parseInt(this.audio.duration * seekPos)
     },
+    preview(e) {
+      const bounds = e.target.getBoundingClientRect()
+      const seekPos = (e.clientX - bounds.left) / bounds.width
+
+      this.currentPosition = parseInt(this.audio.duration * seekPos)
+    },
     padTime(time) {
       return time.toString().padStart(2, '0')
     },
@@ -157,6 +173,9 @@ export default {
       return this.volume / 100 === 0
     },
     percentComplete() {
+      if (this.hovering) {
+        return parseInt((this.currentPosition / this.durationSeconds) * 100)
+      }
       return parseInt((this.currentSeconds / this.durationSeconds) * 100)
     },
     progressStyle() {
