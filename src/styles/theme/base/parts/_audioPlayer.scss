@@ -90,7 +90,7 @@ $player-timeline-color: $player-border-color;
 
   .player-time-current {
     font-weight: 700;
-    padding: 0 5px;
+    padding: 0 10px;
   }
 
   .player-title {
@@ -103,8 +103,8 @@ $player-timeline-color: $player-border-color;
   }
 
   .player-time-total {
-    opacity: 0.5;
-    padding: 0 5px;
+    opacity: 0.8;
+    padding: 0 10px;
   }
 }
 

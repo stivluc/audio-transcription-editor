@@ -2,7 +2,7 @@
   <div class="player">
     <div class="player-wrapper">
       <div class="player-controls">
-        <PlayButton :playing="playing" @click="togglePlayback" />
+        <PlayButton :playing="playing" @togglePlayback="togglePlayback" />
         <StopButton @stop="stop" />
         <div id="seek" style="width: 100%">
           <div class="player-timeline">
@@ -14,7 +14,6 @@
             <div class="player-title">
               <p>dgqdrgedgdrg</p>
             </div>
-
             <div class="player-time-total">{{ formattedDuration }}</div>
           </div>
         </div>
@@ -43,6 +42,7 @@
             <UnmuteIcon v-else />
           </a>
         </div>
+        <DownloadButton @download="download" v-show="!showVolume" />
       </div>
       <audio
         ref="audio"
@@ -60,6 +60,7 @@
 <script>
 import PlayButton from './PlayButton.vue'
 import StopButton from './StopButton.vue'
+import DownloadButton from './DownloadButton.vue'
 import MuteIcon from '../icons/MuteIcon.vue'
 import UnmuteIcon from '../icons/UnmuteIcon.vue'
 import VolumeIcon from '../icons/VolumeIcon.vue'
@@ -68,6 +69,7 @@ export default {
   components: {
     PlayButton,
     StopButton,
+    DownloadButton,
     MuteIcon,
     UnmuteIcon,
     VolumeIcon
@@ -138,6 +140,16 @@ export default {
         this.previousVolume = this.volume
         this.volume = 0
       }
+    },
+    download() {
+      this.audio.pause()
+
+      const link = document.createElement('a')
+      link.href = this.audioSrc
+      link.download = this.audio.title
+
+      // Programmatically click the link to trigger the download
+      link.click()
     }
   },
   computed: {
