@@ -1,7 +1,10 @@
 <template>
   <div id="app">
-    <audio-player file="/data/Sample1_Audio.wav"></audio-player>
-    <transcription-text></transcription-text>
+    <audio-player
+      file="/data/Sample1_Audio.wav"
+      @currentTimeChange="updateCurrentTime"
+    ></audio-player>
+    <transcription-text :currentTime="currentTime"></transcription-text>
   </div>
 </template>
 
@@ -14,6 +17,17 @@ export default {
   components: {
     AudioPlayer,
     TranscriptionText
+  },
+  data() {
+    return {
+      currentTime: 0
+    }
+  },
+  methods: {
+    updateCurrentTime(newValue) {
+      console.log(newValue)
+      this.currentTime = newValue
+    }
   }
 }
 </script>

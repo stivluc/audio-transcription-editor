@@ -48,6 +48,7 @@ $player-timeline-color: $player-border-color;
       line-height: 0;
       padding: 1em;
       text-decoration: none;
+      cursor: pointer;
 
       svg {
         display: inline-block;
@@ -123,6 +124,7 @@ $player-timeline-color: $player-border-color;
 }
 
 .player-volume {
+  cursor: pointer;
   height: 1.1rem;
   margin: 0 0 0 1rem;
   width: calc(6rem + 1px);
