@@ -1,13 +1,17 @@
 <template>
   <div class="transcription-container">
     <div class="transcription-content">
-      <div v-for="(text, startTime) in transcriptions" :key="startTime">
-        <span
-          @click="selectWord(startTime)"
-          :class="{ 'highlighted-word': selectedWord === startTime }"
-          >{{ getDisplayedText(startTime) }}</span
-        >
-      </div>
+      <p class="transcription-text">
+        <span v-for="(text, startTime) in transcriptions" :key="startTime">
+          <span
+            @click="selectWord(startTime)"
+            :class="{ 'highlighted-word': selectedWord === startTime }"
+          >
+            {{ text.trim() }}
+          </span>
+          <span>&nbsp;</span>
+        </span>
+      </p>
     </div>
     <button @click="revertLastEdit" v-if="editedText">Revert Last Edit</button>
   </div>
@@ -40,18 +44,18 @@ export default {
         this.selectedWord = null
       }
     },
-    getDisplayedText(startTime) {
-      if (this.selectedWord === startTime) {
-        return this.editedText
-      } else {
-        return this.transcriptions[startTime]
-      }
-    },
     loadTranscriptions() {
       axios
         .get('/data/Sample1_Transcription.json')
         .then((response) => {
-          this.transcriptions = response.data
+          const jsonData = response.data
+          this.transcriptions = Object.keys(jsonData).reduce(
+            (result, key) => ({
+              ...result,
+              [jsonData[key][0]]: key
+            }),
+            {}
+          )
         })
         .catch((error) => {
           console.error('Error loading transcriptions:', error)
@@ -63,24 +67,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.transcription-container {
-  height: 300px;
-  overflow-y: auto;
-  margin-top: 20px;
-}
-
-.transcription-content {
-  padding: 10px;
-}
-
-.highlighted-word {
-  background-color: yellow;
-  cursor: pointer;
-}
-
-button {
-  margin: 5px;
-}
-</style>

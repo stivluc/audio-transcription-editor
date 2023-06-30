@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
+
+#app {
+  display: grid;
+  // grid-template-columns: 1fr 1fr;
+  // padding: 0 2rem;
+  grid-template-rows: max-content auto;
+  grid-template-areas:
+    'header'
+    'content';
+
+  background-color: #fafafa;
+  width: 100vw;
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  align-items: stretch;
+  font-family: 'Montserrat', sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+header {
+  grid-area: header;
+  width: 100%;
+}
+
+main {
+  grid-area: content;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  align-items: stretch;
+}
+
+@import './layout.mobile';
+@import './layout.desktop';
