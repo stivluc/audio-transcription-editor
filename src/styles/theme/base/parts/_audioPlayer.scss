@@ -1,6 +1,6 @@
 $player-bg: #fff;
 $player-border-color: darken($player-bg, 12%);
-$player-link-color: darken($player-bg, 75%);
+$player-link-color: #424874;
 $player-progress-color: $player-link-color;
 $player-text-color: $player-link-color;
 $player-timeline-color: $player-border-color;
@@ -97,7 +97,7 @@ $player-timeline-color: $player-border-color;
   justify-content: space-between;
 
   .player-time-current {
-    font-weight: 700;
+    font-weight: 600;
     padding: 0 10px;
     width: 50px;
   }

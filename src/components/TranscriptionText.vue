@@ -8,7 +8,6 @@
           :class="{ 'highlighted-word': isCurrentPart(text) }"
         >
           {{ text.trim() }}
-          <!-- <span>&nbsp;</span> -->
         </span>
       </p>
     </div>
