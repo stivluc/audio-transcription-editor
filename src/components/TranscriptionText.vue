@@ -1,21 +1,48 @@
 <template>
   <div class="transcription-container">
     <div class="transcription-content">
-      <p class="transcription-text">
-        <span
-          v-for="(text, startTime) in transcriptionText"
-          :key="startTime"
-          :class="{ 'highlighted-word': isCurrentPart(text) }"
+      <div class="transcription-text">
+        <p
+          v-for="wordInterval in wordIntervals"
+          :key="wordInterval.interval"
+          :class="[
+            'transcription-word',
+            { 'highlighted-word': isCurrentPart(wordInterval.interval) }
+          ]"
         >
-          {{ text.trim() }}
-        </span>
-      </p>
+          {{ wordInterval.word + ' ' }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+
+function divideTranscriptionWords(transcription) {
+  const wordIntervals = {}
+
+  Object.entries(transcription).forEach(([sentence, interval]) => {
+    const words = sentence.trim().split(/\s+/)
+    const step = (interval[1] - interval[0]) / words.length
+
+    words.forEach((word, index) => {
+      const start = interval[0] + index * step
+      const end = interval[0] + (index + 1) * step
+      const duration = end - start // Calculate the duration for the word
+      wordIntervals[start] = { word, interval: [start, end], duration }
+    })
+  })
+
+  const sortedIntervals = Object.values(wordIntervals).sort((a, b) => a.interval[0] - b.interval[0])
+
+  return sortedIntervals.map(({ word, interval, duration }) => ({
+    word,
+    interval: interval.join('-'),
+    duration
+  }))
+}
 
 export default {
   props: {
@@ -27,7 +54,8 @@ export default {
   data() {
     return {
       transcription: {},
-      transcriptionText: {}
+      wordIntervals: {},
+      editableIntervals: new Set()
     }
   },
   methods: {
@@ -37,24 +65,15 @@ export default {
         .then((response) => {
           const jsonData = response.data
           this.transcription = jsonData
-          this.transcriptionText = Object.keys(jsonData).reduce(
-            (result, key) => ({
-              ...result,
-              [jsonData[key][0]]: key
-            }),
-            {}
-          )
+          this.wordIntervals = divideTranscriptionWords(jsonData)
         })
         .catch((error) => {
           console.error('Error loading transcriptions:', error)
         })
     },
-    isCurrentPart(text) {
-      const [startTime, endTime] = this.transcription[text]
-      if (this.currentTime >= startTime && this.currentTime < endTime && this.currentTime > 0) {
-        return true
-      }
-      return false
+    isCurrentPart(interval) {
+      const [start, end] = interval.split('-').map(Number)
+      return this.currentTime >= start && this.currentTime < end && this.currentTime > 0
     }
   },
   mounted() {
