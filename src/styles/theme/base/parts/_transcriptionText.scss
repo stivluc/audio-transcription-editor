@@ -15,14 +15,47 @@
   text-justify: inter-word;
   font-family: 'Roboto', monospace;
   font-size: large;
-  line-height: 2.5;
+  line-height: 2.75;
 }
 
 .transcription-word {
+  cursor: pointer;
   display: inline;
+  position: relative;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none;
+
+  > .deleted-word {
+    text-decoration: line-through;
+    color: #b71c1c;
+    font-weight: 600;
+  }
+
+  > .added-word {
+    color: green;
+    font-weight: 600;
+  }
+
+  > .modified-word {
+    color: #ff8b13;
+    font-weight: 600;
+  }
+}
+
+.space {
+  animation: none;
+  background-color: white;
+  text-decoration: underline;
+  color: white;
+}
+
+.previous-word {
+  position: absolute;
+  font-size: small;
+  top: 1rem;
+  // font-style: italic;
+  right: 10px;
 }
 
 .highlighted-word {
@@ -31,7 +64,7 @@
 
 @keyframes pulse {
   0% {
-    color: #000;
+    background-color: transparent;
   }
 
   50% {
@@ -39,6 +72,6 @@
   }
 
   100% {
-    color: #000;
+    background-color: transparent;
   }
 }

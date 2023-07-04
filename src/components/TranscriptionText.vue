@@ -3,15 +3,34 @@
     <div class="transcription-content">
       <div class="transcription-text">
         <p
-          v-for="wordInterval in wordIntervals"
+          v-for="(wordInterval, index) in wordIntervals"
           :key="wordInterval.interval"
-          :class="[
-            'transcription-word',
-            { 'highlighted-word': isCurrentPart(wordInterval.interval) }
-          ]"
+          :class="['transcription-word']"
+          @click="showPopover(index)"
         >
-          {{ wordInterval.word + ' ' }}
+          <span
+            :class="[
+              {
+                'highlighted-word': isCurrentPart(wordInterval.interval),
+                'deleted-word': wordInterval.deleted,
+                'added-word': wordInterval.added,
+                'modified-word': wordInterval.modified
+              }
+            ]"
+            >{{ wordInterval.word.trim() }}</span
+          >
+          <span v-if="wordInterval.modified" class="previous-word">{{
+            wordInterval.previousWord
+          }}</span>
+          <span class="space">{{ ' ' }}</span>
         </p>
+        <!-- Popover -->
+        <div class="word-popover" v-if="showingPopover">
+          <button @click="addWord()">Add Word</button>
+          <button @click="modifyWord()">Modify Word</button>
+          <button v-if="isDeleted(popoverIndex)" @click="restoreWord()">Restore Word</button>
+          <button v-else @click="deleteWord()">Delete Word</button>
+        </div>
       </div>
     </div>
   </div>
@@ -24,23 +43,25 @@ function divideTranscriptionWords(transcription) {
   const wordIntervals = {}
 
   Object.entries(transcription).forEach(([sentence, interval]) => {
-    const words = sentence.trim().split(/\s+/)
-    const step = (interval[1] - interval[0]) / words.length
+    const words = sentence.trim().split(/\s+/) // Create an array with the words within a sentence
+    const step = (interval[1] - interval[0]) / words.length // Calculate the approximate time by word for the audio based on the interval divided by the number of words
 
     words.forEach((word, index) => {
       const start = interval[0] + index * step
       const end = interval[0] + (index + 1) * step
-      const duration = end - start // Calculate the duration for the word
-      wordIntervals[start] = { word, interval: [start, end], duration }
+      wordIntervals[start] = { word, interval: [start, end] }
     })
   })
 
   const sortedIntervals = Object.values(wordIntervals).sort((a, b) => a.interval[0] - b.interval[0])
 
-  return sortedIntervals.map(({ word, interval, duration }) => ({
+  return sortedIntervals.map(({ word, interval }) => ({
     word,
-    interval: interval.join('-'),
-    duration
+    interval: interval,
+    deleted: false, // Initialize the deleted attribute to false
+    added: false,
+    modified: false, // Initialize the modified attribute to false
+    previousWord: null // Initialize the previousWord attribute to null
   }))
 }
 
@@ -55,7 +76,8 @@ export default {
     return {
       transcription: {},
       wordIntervals: {},
-      editableIntervals: new Set()
+      showingPopover: false,
+      popoverIndex: null
     }
   },
   methods: {
@@ -72,8 +94,53 @@ export default {
         })
     },
     isCurrentPart(interval) {
-      const [start, end] = interval.split('-').map(Number)
+      const start = interval[0]
+      const end = interval[1]
       return this.currentTime >= start && this.currentTime < end && this.currentTime > 0
+    },
+    showPopover(index) {
+      this.showingPopover = true
+      this.popoverIndex = index
+    },
+    addWord() {
+      const newWord = prompt('Enter the new word:')
+      if (newWord) {
+        const currentIndex = this.popoverIndex
+        this.wordIntervals.splice(currentIndex + 1, 0, {
+          word: newWord,
+          interval: [0, 0],
+          deleted: false,
+          added: true,
+          modified: false,
+          previousWord: null
+        })
+      }
+      this.hidePopover()
+    },
+    modifyWord() {
+      const modifiedWord = prompt('Modify the word:', this.wordIntervals[this.popoverIndex].word)
+      if (modifiedWord) {
+        this.wordIntervals[this.popoverIndex].previousWord =
+          this.wordIntervals[this.popoverIndex].word
+        this.wordIntervals[this.popoverIndex].word = modifiedWord
+        this.wordIntervals[this.popoverIndex].modified = true
+      }
+      this.hidePopover()
+    },
+    deleteWord() {
+      this.wordIntervals[this.popoverIndex].deleted = true
+      this.hidePopover()
+    },
+    isDeleted(index) {
+      return this.wordIntervals[index]?.deleted || false
+    },
+    restoreWord() {
+      this.wordIntervals[this.popoverIndex].deleted = false
+      this.hidePopover()
+    },
+    hidePopover() {
+      this.showingPopover = false
+      this.popoverIndex = null
     }
   },
   mounted() {
@@ -81,3 +148,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.word-popover {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  z-index: 99;
+}
+</style>

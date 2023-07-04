@@ -122,12 +122,6 @@ export default {
     togglePlayback() {
       this.playing = !this.playing
     },
-    update() {
-      console.log('update!')
-      if (this.audio) {
-        this.currentSeconds = parseInt(this.audio.currentTime)
-      }
-    },
     stop() {
       this.playing = false
       if (this.audio) {
