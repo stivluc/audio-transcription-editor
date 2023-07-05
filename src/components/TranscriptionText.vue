@@ -2,7 +2,7 @@
   <div class="transcription-container">
     <div class="transcription-content">
       <div class="transcription-text">
-        <p
+        <div
           v-for="(wordInterval, index) in wordIntervals"
           :key="wordInterval.interval"
           :class="['transcription-word']"
@@ -23,14 +23,14 @@
             wordInterval.previousWord
           }}</span>
           <span class="space">{{ ' ' }}</span>
-        </p>
-        <!-- Popover -->
-        <div class="word-popover" v-if="showingPopover">
-          <button @click="addWord()">Add Word</button>
-          <button @click="modifyWord()">Modify Word</button>
-          <button v-if="isDeleted(popoverIndex)" @click="restoreWord()">Restore Word</button>
-          <button v-else @click="deleteWord()">Delete Word</button>
+          <div class="word-popover" v-show="showingPopover && popoverIndex === index">
+            <button @click="addWord()">Add Word</button>
+            <button @click="modifyWord()">Modify Word</button>
+            <button v-if="isDeleted(index)" @click="restoreWord()">Restore Word</button>
+            <button v-else @click="deleteWord()">Delete Word</button>
+          </div>
         </div>
+        <!-- Popover -->
       </div>
     </div>
   </div>
@@ -102,6 +102,10 @@ export default {
       this.showingPopover = true
       this.popoverIndex = index
     },
+    hidePopover() {
+      this.showingPopover = false
+      this.popoverIndex = null
+    },
     addWord() {
       const newWord = prompt('Enter the new word:')
       if (newWord) {
@@ -137,10 +141,6 @@ export default {
     restoreWord() {
       this.wordIntervals[this.popoverIndex].deleted = false
       this.hidePopover()
-    },
-    hidePopover() {
-      this.showingPopover = false
-      this.popoverIndex = null
     }
   },
   mounted() {
