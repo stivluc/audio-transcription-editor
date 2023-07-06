@@ -1,20 +1,18 @@
-$player-bg: #fff;
-$player-border-color: darken($player-bg, 12%);
-$player-link-color: darken($player-bg, 75%);
-$player-progress-color: $player-link-color;
-$player-text-color: $player-link-color;
+$player-border-color: darken($background-light, 12%);
+$player-progress-color: $color-primary;
 $player-timeline-color: $player-border-color;
 
 .player {
-  background-color: $player-bg;
+  background-color: $background-light;
   border-radius: 1rem;
-  margin: 1rem;
-
+  margin: 1rem 2rem 1rem;
   border: 1px solid $player-border-color;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
-  color: $player-text-color;
+  color: $color_text;
   line-height: 1.5625;
   position: relative;
+  // width: 100%;
+  z-index: 999;
   padding: 0;
 }
 
@@ -25,7 +23,7 @@ $player-timeline-color: $player-border-color;
   border-radius: 1rem;
 
   align-items: center;
-  background-color: $player-bg;
+  background-color: $background-light;
   justify-content: center;
 }
 
@@ -43,12 +41,24 @@ $player-timeline-color: $player-border-color;
     }
 
     span {
-      color: $player-link-color;
+      color: $color-primary;
       display: block;
       line-height: 0;
       padding: 1em;
       text-decoration: none;
       cursor: pointer;
+
+      &:hover {
+        svg {
+          transform: scale(1.05);
+        }
+      }
+
+      &:active {
+        svg {
+          transform: scale(1.15);
+        }
+      }
 
       svg {
         display: inline-block;
@@ -97,7 +107,7 @@ $player-timeline-color: $player-border-color;
   justify-content: space-between;
 
   .player-time-current {
-    font-weight: 700;
+    font-weight: 600;
     padding: 0 10px;
     width: 50px;
   }

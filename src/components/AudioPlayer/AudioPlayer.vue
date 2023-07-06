@@ -11,8 +11,8 @@
               <div
                 @click="seek"
                 @mouseenter="hovering = true"
-                @mousemove="preview"
                 @mouseleave="hovering = false"
+                @mousemove="preview"
                 class="player-seeker"
                 title="Seek"
               ></div>
@@ -86,6 +86,10 @@ export default {
     file: {
       type: String,
       default: null
+    },
+    isAudioPlaying: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -115,15 +119,12 @@ export default {
         this.durationSeconds = Math.floor(this.audio.duration)
         this.loaded = true
       })
+      this.audio.addEventListener('ended', () => {
+        this.stop()
+      })
     },
     togglePlayback() {
       this.playing = !this.playing
-    },
-    update() {
-      console.log('update!')
-      if (this.audio) {
-        this.currentSeconds = parseInt(this.audio.currentTime)
-      }
     },
     stop() {
       this.playing = false
@@ -142,6 +143,7 @@ export default {
       const seekPos = (e.clientX - bounds.left) / bounds.width
 
       this.audio.currentTime = parseInt(this.audio.duration * seekPos)
+      this.currentSeconds = parseInt(this.audio.duration * seekPos)
     },
     preview(e) {
       const bounds = e.target.getBoundingClientRect()

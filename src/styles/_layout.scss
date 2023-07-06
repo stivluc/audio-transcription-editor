@@ -14,6 +14,11 @@
   min-height: 100vh;
 }
 
+#editor {
+  margin: auto;
+  max-width: 1200px;
+}
+
 body {
   display: flex;
   flex-direction: row;

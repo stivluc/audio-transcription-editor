@@ -2,12 +2,12 @@
 $mobile_width_cutoff: 800px;
 
 // fonts
-$header_font: "Lato", sans-serif;
-$body_font: "Open Sans", sans-serif;
-
+$header_font: 'Lato', sans-serif;
+$body_font: 'Open Sans', sans-serif;
 
 // colors
 $color_primary: #941606;
+$color_text: #2e2e2e;
 $trans_darken: rgba(0, 0, 0, 0.4);
 $trans_lighten: rgba(255, 255, 255, 0.4);
 
@@ -20,5 +20,3 @@ $background_veryDark: #222;
 $sidebar_controls_width: 90px;
 $sidebar_width: 35vw;
 $sidebar_min_width: 490px;
-
-

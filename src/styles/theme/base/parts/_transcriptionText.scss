@@ -2,19 +2,78 @@
   background-color: white;
   border-radius: 1rem;
   padding: 2rem;
-  margin: 1rem;
+  margin: 0 2rem 1rem;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
   border: 1px solid darken(#fff, 12%);
+  height: fit-content;
+  max-width: 100%;
 }
 
 .transcription-content {
   white-space: pre-line;
   text-align: justify;
   text-justify: inter-word;
-
   font-family: 'Roboto', monospace;
-  line-height: 2;
   font-size: large;
+  line-height: 2.75;
+}
+
+.transcription-word {
+  cursor: pointer;
+  display: inline;
+  position: relative;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none;
+
+  > .deleted-word {
+    text-decoration: line-through;
+    color: #b71c1c;
+    font-weight: 600;
+  }
+
+  > .added-word {
+    color: green;
+    font-weight: 600;
+  }
+
+  > .modified-word {
+    color: #ff8b13;
+    font-weight: 600;
+  }
+}
+
+.space {
+  animation: none;
+  background-color: white;
+  text-decoration: underline;
+  color: white;
+}
+
+.previous-word {
+  position: absolute;
+  font-size: small;
+  top: 1rem;
+  // font-style: italic;
+  right: 10px;
+}
+
+.highlighted-word {
+  animation: pulse 0.5s infinite ease-out;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: transparent;
+  }
+
+  50% {
+    background-color: yellow;
+  }
+
+  100% {
+    background-color: transparent;
+  }
 }
 
 .highlighted-word {

@@ -1,10 +1,9 @@
 <template>
   <div id="app">
-    <audio-player
-      file="/data/Sample1_Audio.wav"
-      @currentTimeChange="updateCurrentTime"
-    ></audio-player>
-    <transcription-text :currentTime="currentTime"></transcription-text>
+    <div id="editor">
+      <audio-player file="/data/Sample1_Audio.wav" @currentTimeChange="updateCurrentTime" />
+      <transcription-text :currentTime="currentTime" />
+    </div>
   </div>
 </template>
 
@@ -25,7 +24,6 @@ export default {
   },
   methods: {
     updateCurrentTime(newValue) {
-      console.log(newValue)
       this.currentTime = newValue
     }
   }
