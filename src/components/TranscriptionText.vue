@@ -4,40 +4,76 @@
       <div class="transcription-text">
         <div
           v-for="(wordInterval, index) in wordIntervals"
-          :key="wordInterval.interval"
+          :key="index"
           :class="['transcription-word']"
-          @click="showPopover(index)"
         >
-          <span
-            :class="[
-              {
-                'highlighted-word': isCurrentPart(wordInterval.interval),
-                'deleted-word': wordInterval.deleted,
-                'added-word': wordInterval.added,
-                'modified-word': wordInterval.modified
-              }
-            ]"
-            >{{ wordInterval.word.trim() }}</span
-          >
-          <span v-if="wordInterval.modified" class="previous-word">{{
-            wordInterval.previousWord
-          }}</span>
-          <span class="space">{{ ' ' }}</span>
-          <div class="word-popover" v-show="showingPopover && popoverIndex === index">
-            <button @click="addWord()">Add Word</button>
-            <button @click="modifyWord()">Modify Word</button>
-            <button v-if="isDeleted(index)" @click="restoreWord()">Restore Word</button>
-            <button v-else @click="deleteWord()">Delete Word</button>
-          </div>
+          <v-menu :close-on-content-click="false" bottom content-class="transcription-popover">
+            <template v-slot:activator="{ props }">
+              <span
+                v-bind="props"
+                @click="setIndex(index)"
+                :class="[
+                  {
+                    'highlighted-word': isCurrentPart(wordInterval.interval),
+                    'deleted-word': wordInterval.deleted,
+                    'added-word': wordInterval.added && !wordInterval.deleted,
+                    'modified-word':
+                      wordInterval.modified && !wordInterval.deleted && !wordInterval.added
+                  }
+                ]"
+                >{{ wordInterval.word.trim() }}</span
+              >
+              <span v-if="wordInterval.modified" class="previous-word">{{
+                wordInterval.previousWord
+              }}</span>
+              <span class="space">{{ ' ' }}</span>
+            </template>
+            <v-list :min-width="180" v-show="isMenuOpen" style="border-radius: 10px">
+              <div v-show="!isEditing">
+                <v-list-item>
+                  <v-btn :elevation="0" text @click="isEditing = 'add'">Add</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn :elevation="0" text @click="isEditing = 'edit'">Edit</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn :elevation="0" text v-if="isDeleted(index)" @click="restoreWord()"
+                    >Restore</v-btn
+                  >
+                  <v-btn :elevation="0" text v-else @click="deleteWord()">Delete</v-btn>
+                </v-list-item>
+              </div>
+              <div v-show="isEditing">
+                <v-list-item>
+                  <v-text-field
+                    :label="isEditing === 'add' ? 'New word' : 'Modification'"
+                    hide-details="auto"
+                    ref="editTextField"
+                    v-on:keydown.enter="isEditing === 'add' ? addWord($event) : editWord($event)"
+                    autofocus
+                  />
+                </v-list-item>
+              </div>
+            </v-list>
+          </v-menu>
         </div>
-        <!-- Popover -->
       </div>
     </div>
+  </div>
+  <div class="export-container">
+    <button class="export-button" @click="exportData">
+      <span>
+        <ExportIcon />
+        Export
+      </span>
+    </button>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { saveAs } from 'file-saver'
+import ExportIcon from './icons/ExportIcon.vue'
 
 function divideTranscriptionWords(transcription) {
   const wordIntervals = {}
@@ -66,6 +102,9 @@ function divideTranscriptionWords(transcription) {
 }
 
 export default {
+  components: {
+    ExportIcon
+  },
   props: {
     currentTime: {
       type: Number,
@@ -76,8 +115,9 @@ export default {
     return {
       transcription: {},
       wordIntervals: {},
-      showingPopover: false,
-      popoverIndex: null
+      popoverIndex: null,
+      isEditing: false,
+      isMenuOpen: false
     }
   },
   methods: {
@@ -98,49 +138,71 @@ export default {
       const end = interval[1]
       return this.currentTime >= start && this.currentTime < end && this.currentTime > 0
     },
-    showPopover(index) {
-      this.showingPopover = true
+    setIndex(index) {
       this.popoverIndex = index
+      setTimeout(() => {
+        this.isEditing = false
+        this.isMenuOpen = true
+      }, 100)
     },
-    hidePopover() {
-      this.showingPopover = false
-      this.popoverIndex = null
-    },
-    addWord() {
-      const newWord = prompt('Enter the new word:')
+    addWord(event) {
+      const newWord = event.target.value
       if (newWord) {
-        const currentIndex = this.popoverIndex
-        this.wordIntervals.splice(currentIndex + 1, 0, {
+        const previousInterval = this.wordIntervals[this.popoverIndex].interval
+        const intervalDifference = previousInterval[1] - previousInterval[0]
+        const start = previousInterval[0] + intervalDifference / 2
+        const end = previousInterval[1]
+        const newInterval = [start, end]
+
+        // Update the interval of the clicked word
+        this.wordIntervals[this.popoverIndex].interval = [previousInterval[0], start]
+
+        // Insert the new word with the adjusted interval
+        this.wordIntervals.splice(this.popoverIndex + 1, 0, {
           word: newWord,
-          interval: [0, 0],
+          interval: newInterval,
           deleted: false,
           added: true,
           modified: false,
           previousWord: null
         })
       }
-      this.hidePopover()
+      this.isMenuOpen = false
+      this.isEditing = null
+      this.popoverIndex = null
     },
-    modifyWord() {
-      const modifiedWord = prompt('Modify the word:', this.wordIntervals[this.popoverIndex].word)
+    editWord(event) {
+      const modifiedWord = event.target.value
       if (modifiedWord) {
         this.wordIntervals[this.popoverIndex].previousWord =
           this.wordIntervals[this.popoverIndex].word
         this.wordIntervals[this.popoverIndex].word = modifiedWord
         this.wordIntervals[this.popoverIndex].modified = true
       }
-      this.hidePopover()
+      this.isMenuOpen = false
+      this.popoverIndex = null
     },
     deleteWord() {
       this.wordIntervals[this.popoverIndex].deleted = true
-      this.hidePopover()
+      this.isMenuOpen = false
+      this.popoverIndex = null
     },
     isDeleted(index) {
       return this.wordIntervals[index]?.deleted || false
     },
     restoreWord() {
       this.wordIntervals[this.popoverIndex].deleted = false
-      this.hidePopover()
+      this.isMenuOpen = false
+      this.popoverIndex = null
+    },
+    exportData() {
+      const modifiedIntervals = this.wordIntervals.filter((interval) => !interval.deleted)
+
+      const exportedData = modifiedIntervals.map((interval) => interval.word).join(' ')
+
+      // Open the file save dialog
+      const blob = new Blob([exportedData], { type: 'text/plain;charset=utf-8' })
+      saveAs(blob, 'finalTranscription.txt')
     }
   },
   mounted() {
@@ -148,15 +210,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.word-popover {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  background-color: #fff;
-  padding: 10px;
-  border: 1px solid #ccc;
-  z-index: 99;
-}
-</style>

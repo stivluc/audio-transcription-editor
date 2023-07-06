@@ -86,6 +86,10 @@ export default {
     file: {
       type: String,
       default: null
+    },
+    isAudioPlaying: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

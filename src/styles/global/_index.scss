@@ -4,6 +4,10 @@
 @import 'variables';
 @import 'mixins';
 
+.loader {
+  color: $color-primary;
+}
+
 /***************************** NOTE *****************************/
 /*
     Keep in mind that anything defined in global is subject to be

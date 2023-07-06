@@ -1,0 +1,40 @@
+$player-border-color: darken(#fff, 12%);
+$player-link-color: #444;
+
+.export-container {
+  float: right;
+}
+
+.export-button {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  margin: 0rem 2rem 2rem;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid darken(#fff, 12%);
+  height: fit-content;
+  max-width: 100%;
+  width: fit-content;
+  color: $player-link-color;
+
+  &:hover {
+    transition: all 0.3s ease-in-out;
+    background-color: #fafafa;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  span {
+    font-size: large;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: $color-primary;
+
+    svg {
+      color: $color-primary;
+      width: 1.4rem;
+      margin-bottom: 0.2rem;
+    }
+  }
+}
