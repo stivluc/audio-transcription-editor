@@ -2,7 +2,8 @@ $player-border-color: darken(#fff, 12%);
 $player-link-color: #444;
 
 .export-container {
-  float: right;
+  display: flex;
+  justify-content: space-between;
 }
 
 .export-button {
@@ -37,4 +38,10 @@ $player-link-color: #444;
       margin-bottom: 0.2rem;
     }
   }
+}
+
+.logo {
+  margin: 0rem 3rem 2rem;
+
+  height: 59px;
 }
