@@ -203,11 +203,16 @@ export default {
     exportData() {
       const modifiedIntervals = this.wordIntervals.filter((interval) => !interval.deleted)
 
-      const exportedData = modifiedIntervals.map((interval) => interval.word).join(' ')
+      const exportedData = modifiedIntervals.reduce((data, interval) => {
+        data[interval.word] = interval.interval
+        return data
+      }, {})
+
+      const jsonData = JSON.stringify(exportedData, null, 2)
 
       // Open the file save dialog
-      const blob = new Blob([exportedData], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, 'finalTranscription.txt')
+      const blob = new Blob([jsonData], { type: 'application/json' })
+      saveAs(blob, 'modifiedWordIntervals.json')
     }
   },
   mounted() {
