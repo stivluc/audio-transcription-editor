@@ -61,11 +61,12 @@
     </div>
   </div>
   <div class="export-container">
-    <img
+    <div></div>
+    <!-- <img
       class="logo"
       alt="Univ Logo"
       src="https://i.pinimg.com/originals/98/52/43/9852439f1f7db234e2f6e18e3672b996.png"
-    />
+    /> -->
     <button class="export-button" @click="exportData">
       <span>
         <ExportIcon />
