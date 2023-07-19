@@ -95,7 +95,7 @@ export default {
   data() {
     return {
       audio: null,
-      audioSrc: '/data/Sample1_Audio.wav',
+      audioSrc: '/data/Sample2_Audio.mp3',
       currentSeconds: 0,
       currentPosition: 0,
       durationSeconds: 0,

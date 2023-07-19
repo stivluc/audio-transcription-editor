@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="editor">
-      <audio-player file="/data/Sample1_Audio.wav" @currentTimeChange="updateCurrentTime" />
+      <audio-player file="/data/Sample2_Audio.wav" @currentTimeChange="updateCurrentTime" />
       <transcription-text :currentTime="currentTime" />
     </div>
   </div>
