@@ -1,9 +1,8 @@
 $player-border-color: darken($background-light, 12%);
-$player-progress-color: $color-primary;
+$player-progress-color: #2e2e2e;
 $player-timeline-color: $player-border-color;
 
 .player {
-  background-color: $background-light;
   border-radius: 1rem;
   margin: 1rem 2rem 1rem;
   border: 1px solid $player-border-color;
@@ -23,7 +22,7 @@ $player-timeline-color: $player-border-color;
   border-radius: 1rem;
 
   align-items: center;
-  background-color: $background-light;
+  background-color: #86ced8;
   justify-content: center;
 }
 
@@ -41,7 +40,7 @@ $player-timeline-color: $player-border-color;
     }
 
     span {
-      color: $color-primary;
+      color: #2e2e2e;
       display: block;
       line-height: 0;
       padding: 1em;

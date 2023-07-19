@@ -1,5 +1,5 @@
 .transcription-container {
-  background-color: white;
+  background-color: $background-light;
   border-radius: 1rem;
   padding: 2rem;
   margin: 0 2rem 1rem;
@@ -45,8 +45,8 @@
 
 .space {
   animation: none;
-  background-color: white;
-  text-decoration: underline;
+  background-color: $background-light;
+  // text-decoration: underline;
   color: white;
 }
 
