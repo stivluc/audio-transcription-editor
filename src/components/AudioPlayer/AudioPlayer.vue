@@ -126,6 +126,13 @@ export default {
     togglePlayback() {
       this.playing = !this.playing
     },
+    pauseAudio() {
+      this.playing = false
+    },
+    // Method to resume audio playing
+    resumeAudio() {
+      this.playing = true
+    },
     stop() {
       this.playing = false
       if (this.audio) {

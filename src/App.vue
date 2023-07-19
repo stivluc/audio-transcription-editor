@@ -1,8 +1,18 @@
 <template>
   <div id="app">
     <div id="editor">
-      <audio-player file="/data/Sample2_Audio.wav" @currentTimeChange="updateCurrentTime" />
-      <transcription-text :currentTime="currentTime" />
+      <audio-player
+        file="/data/Sample2_Audio.wav"
+        ref="audioPlayer"
+        @currentTimeChange="updateCurrentTime"
+        @pause-audio="pauseAudio"
+        @resume-audio="resumeAudio"
+      />
+      <transcription-text
+        :currentTime="currentTime"
+        @pause-audio="pauseAudio"
+        @resume-audio="resumeAudio"
+      />
     </div>
   </div>
 </template>
@@ -25,6 +35,14 @@ export default {
   methods: {
     updateCurrentTime(newValue) {
       this.currentTime = newValue
+    },
+    // Method to pause the audio
+    pauseAudio() {
+      this.$refs.audioPlayer.pauseAudio()
+    },
+    // Method to resume audio playing
+    resumeAudio() {
+      this.$refs.audioPlayer.resumeAudio()
     }
   }
 }

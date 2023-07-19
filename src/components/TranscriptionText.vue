@@ -123,6 +123,7 @@ export default {
       default: 0
     }
   },
+  emits: ['pause-audio', 'resume-audio'],
   data() {
     return {
       transcription: {},
@@ -202,6 +203,14 @@ export default {
       this.isMenuOpen = false
       this.popoverIndex = null
     },
+    // Emit an event to pause the audio when clicking on a word
+    pauseAudio() {
+      this.$emit('pause-audio')
+    },
+    // Emit an event to resume audio playing when editing is finished
+    resumeAudio() {
+      this.$emit('resume-audio')
+    },
     exportData() {
       const reconstructedSentences = reconstructSentences(
         this.transcription,
@@ -213,6 +222,15 @@ export default {
       // Open the file save dialog
       const blob = new Blob([exportedData], { type: 'text/plain;charset=utf-8' })
       saveAs(blob, 'finalTranscription.json')
+    }
+  },
+  watch: {
+    isMenuOpen(value) {
+      if (value) {
+        this.pauseAudio()
+      } else {
+        this.resumeAudio()
+      }
     }
   },
   mounted() {
