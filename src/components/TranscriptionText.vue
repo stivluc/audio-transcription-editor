@@ -3,7 +3,7 @@
     <div class="transcription-content">
       <div class="transcription-text">
         <div
-          v-for="(wordInterval, index) in wordIntervals"
+          v-for="(word, index) in transcriptionWords"
           :key="index"
           :class="['transcription-word']"
         >
@@ -14,18 +14,16 @@
                 @click="setIndex(index)"
                 :class="[
                   {
-                    'highlighted-word': isCurrentPart(wordInterval.interval),
-                    'deleted-word': wordInterval.deleted,
-                    'added-word': wordInterval.added && !wordInterval.deleted,
+                    'highlighted-word': isCurrentPart(word.time_period),
+                    'deleted-word': word.Corrected === '',
+                    'added-word': word.Init === '',
                     'modified-word':
-                      wordInterval.modified && !wordInterval.deleted && !wordInterval.added
+                      word.Corrected !== word.Init && word.Corrected !== '' && word.Init !== ''
                   }
                 ]"
-                >{{ wordInterval.word.trim() }}</span
+                >{{ word.Corrected.trim() === '' ? word.Init.trim() : word.Corrected.trim() }}</span
               >
-              <span v-if="wordInterval.modified" class="previous-word">{{
-                wordInterval.previousWord
-              }}</span>
+              <span v-if="word.Corrected !== word.Init" class="previous-word">{{ word.Init }}</span>
               <span class="space">{{ ' ' }}</span>
             </template>
             <v-list :min-width="180" v-show="isMenuOpen" style="border-radius: 10px">
@@ -62,11 +60,6 @@
   </div>
   <div class="export-container">
     <div></div>
-    <!-- <img
-      class="logo"
-      alt="Univ Logo"
-      src="https://i.pinimg.com/originals/98/52/43/9852439f1f7db234e2f6e18e3672b996.png"
-    /> -->
     <button class="export-button" @click="exportData">
       <span> Finalize </span>
     </button>
@@ -76,48 +69,65 @@
 <script>
 import axios from 'axios'
 import { saveAs } from 'file-saver'
-import ExportIcon from './icons/ExportIcon.vue'
 
 function divideTranscriptionWords(transcription) {
-  const wordIntervals = {}
+  const transcriptionWords = {}
 
-  Object.entries(transcription).forEach(([sentence, interval]) => {
-    const words = sentence.trim().split(/\s+/) // Create an array with the words within a sentence
-    const step = (interval[1] - interval[0]) / words.length // Calculate the approximate time by word for the audio based on the interval divided by the number of words
+  transcription.forEach((sentence) => {
+    const words = sentence.Init.trim().split(/\s+/) // Create an array with the words within a sentence
+    const step = (sentence.time_period[1] - sentence.time_period[0]) / words.length // Calculate the approximate time by word for the audio based on the time_period divided by the number of words
 
-    words.forEach((word, index) => {
-      const start = interval[0] + index * step
-      const end = interval[0] + (index + 1) * step
-      wordIntervals[start] = { word, interval: [start, end] }
+    words.forEach((value, index) => {
+      const start = sentence.time_period[0] + index * step
+      const end = sentence.time_period[0] + (index + 1) * step
+      transcriptionWords[start] = { value, time_period: [start, end] }
     })
   })
 
-  const sortedIntervals = Object.values(wordIntervals).sort((a, b) => a.interval[0] - b.interval[0])
+  const sortedIntervals = Object.values(transcriptionWords).sort(
+    (a, b) => a.time_period[0] - b.time_period[0]
+  )
 
-  return sortedIntervals.map(({ word, interval }) => ({
-    word,
-    interval: interval,
-    deleted: false, // Initialize the deleted attribute to false
-    added: false,
-    modified: false, // Initialize the modified attribute to false
-    previousWord: null // Initialize the previousWord attribute to null
+  return sortedIntervals.map(({ value, time_period }) => ({
+    Init: value,
+    time_period: time_period,
+    Corrected: value
   }))
 }
 
+function reconstructSentences(transcription, transcriptionWords) {
+  const sentences = []
+
+  transcription.forEach((sentence) => {
+    const sentenceTimePeriod = sentence.time_period
+    const sentenceWords = transcriptionWords.filter((word) => {
+      return (
+        word.time_period[0] >= sentenceTimePeriod[0] && word.time_period[1] <= sentenceTimePeriod[1]
+      )
+    })
+    const reconstructedSentence = sentenceWords.map((word) => word.Corrected).join(' ')
+    sentences.push({
+      Init: sentence.Init,
+      time_period: sentence.time_period,
+      Corrected: reconstructedSentence
+    })
+  })
+
+  return sentences
+}
+
 export default {
-  components: {
-    ExportIcon
-  },
   props: {
     currentTime: {
       type: Number,
       default: 0
     }
   },
+  emits: ['pause-audio', 'resume-audio'],
   data() {
     return {
       transcription: {},
-      wordIntervals: {},
+      transcriptionWords: {},
       popoverIndex: null,
       isEditing: false,
       isMenuOpen: false
@@ -126,11 +136,11 @@ export default {
   methods: {
     loadTranscriptions() {
       axios
-        .get('/data/Sample1_Transcription.json')
+        .get('/data/Sample2_Transcription.json')
         .then((response) => {
           const jsonData = response.data
           this.transcription = jsonData
-          this.wordIntervals = divideTranscriptionWords(jsonData)
+          this.transcriptionWords = divideTranscriptionWords(jsonData)
         })
         .catch((error) => {
           console.error('Error loading transcriptions:', error)
@@ -151,23 +161,20 @@ export default {
     addWord(event) {
       const newWord = event.target.value
       if (newWord) {
-        const previousInterval = this.wordIntervals[this.popoverIndex].interval
-        const intervalDifference = previousInterval[1] - previousInterval[0]
-        const start = previousInterval[0] + intervalDifference / 2
+        const previousInterval = this.transcriptionWords[this.popoverIndex].time_period
+        const timePeriodDifference = previousInterval[1] - previousInterval[0]
+        const start = previousInterval[0] + timePeriodDifference / 2
         const end = previousInterval[1]
-        const newInterval = [start, end]
+        const newTimePeriod = [start, end]
 
-        // Update the interval of the clicked word
-        this.wordIntervals[this.popoverIndex].interval = [previousInterval[0], start]
+        // Update the time_period of the clicked word
+        this.transcriptionWords[this.popoverIndex].time_period = [previousInterval[0], start]
 
-        // Insert the new word with the adjusted interval
-        this.wordIntervals.splice(this.popoverIndex + 1, 0, {
-          word: newWord,
-          interval: newInterval,
-          deleted: false,
-          added: true,
-          modified: false,
-          previousWord: null
+        // Insert the new word with the adjusted time_period
+        this.transcriptionWords.splice(this.popoverIndex + 1, 0, {
+          Init: '',
+          time_period: newTimePeriod,
+          Corrected: newWord
         })
       }
       this.isMenuOpen = false
@@ -177,35 +184,53 @@ export default {
     editWord(event) {
       const modifiedWord = event.target.value
       if (modifiedWord) {
-        this.wordIntervals[this.popoverIndex].previousWord =
-          this.wordIntervals[this.popoverIndex].word
-        this.wordIntervals[this.popoverIndex].word = modifiedWord
-        this.wordIntervals[this.popoverIndex].modified = true
+        this.transcriptionWords[this.popoverIndex].Corrected = modifiedWord
       }
       this.isMenuOpen = false
       this.popoverIndex = null
     },
     deleteWord() {
-      this.wordIntervals[this.popoverIndex].deleted = true
+      this.transcriptionWords[this.popoverIndex].Corrected = ''
       this.isMenuOpen = false
       this.popoverIndex = null
     },
     isDeleted(index) {
-      return this.wordIntervals[index]?.deleted || false
+      return this.transcriptionWords[index]?.Corrected === '' || false
     },
     restoreWord() {
-      this.wordIntervals[this.popoverIndex].deleted = false
+      this.transcriptionWords[this.popoverIndex].Corrected =
+        this.transcriptionWords[this.popoverIndex].Init
       this.isMenuOpen = false
       this.popoverIndex = null
     },
+    // Emit an event to pause the audio when clicking on a word
+    pauseAudio() {
+      this.$emit('pause-audio')
+    },
+    // Emit an event to resume audio playing when editing is finished
+    resumeAudio() {
+      this.$emit('resume-audio')
+    },
     exportData() {
-      const modifiedIntervals = this.wordIntervals.filter((interval) => !interval.deleted)
+      const reconstructedSentences = reconstructSentences(
+        this.transcription,
+        this.transcriptionWords.filter((word) => word.Corrected.trim() !== '') // Remove deleted words
+      )
 
-      const exportedData = modifiedIntervals.map((interval) => interval.word).join(' ')
+      const exportedData = JSON.stringify(reconstructedSentences, null, 2)
 
       // Open the file save dialog
       const blob = new Blob([exportedData], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, 'finalTranscription.txt')
+      saveAs(blob, 'finalTranscription.json')
+    }
+  },
+  watch: {
+    isMenuOpen(value) {
+      if (value) {
+        this.pauseAudio()
+      } else {
+        this.resumeAudio()
+      }
     }
   },
   mounted() {

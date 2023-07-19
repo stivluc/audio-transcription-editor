@@ -95,7 +95,7 @@ export default {
   data() {
     return {
       audio: null,
-      audioSrc: '/data/Sample1_Audio.wav',
+      audioSrc: '/data/Sample2_Audio.mp3',
       currentSeconds: 0,
       currentPosition: 0,
       durationSeconds: 0,
@@ -125,6 +125,13 @@ export default {
     },
     togglePlayback() {
       this.playing = !this.playing
+    },
+    pauseAudio() {
+      this.playing = false
+    },
+    // Method to resume audio playing
+    resumeAudio() {
+      this.playing = true
     },
     stop() {
       this.playing = false
