@@ -30,10 +30,10 @@ $player-link-color: #444;
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    color: darken($color-primary, 20%);
+    color: #2e2e2e;
 
     svg {
-      color: darken($color-primary, 20%);
+      color: #2e2e2e;
       width: 1.4rem;
       margin-bottom: 0.2rem;
     }

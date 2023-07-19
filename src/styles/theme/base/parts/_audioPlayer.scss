@@ -1,5 +1,5 @@
 $player-border-color: darken($background-light, 12%);
-$player-progress-color: darken($color-primary, 20%);
+$player-progress-color: #2e2e2e;
 $player-timeline-color: $player-border-color;
 
 .player {
@@ -22,7 +22,7 @@ $player-timeline-color: $player-border-color;
   border-radius: 1rem;
 
   align-items: center;
-  background-color: #5cbdcd;
+  background-color: #86ced8;
   justify-content: center;
 }
 
@@ -40,7 +40,7 @@ $player-timeline-color: $player-border-color;
     }
 
     span {
-      color: darken($color-primary, 20%);
+      color: #2e2e2e;
       display: block;
       line-height: 0;
       padding: 1em;
