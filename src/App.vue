@@ -11,6 +11,7 @@
       <transcription-text
         :currentTime="currentTime"
         :transcriptionURL="TRANSCRIPTION_PATH"
+        :exportURL="EXPORT_URL"
         @pause-audio="pauseAudio"
         @resume-audio="resumeAudio"
       />
@@ -45,7 +46,8 @@ export default {
       // AUDIO_PATH: ConnectionConfig + 'Yodel_Sound_Effect.mp3'
       // AUDIO_PATH: '/data/Sample2_Audio.wav'
       AUDIO_PATH: null,
-      TRANSCRIPTION_PATH: null
+      TRANSCRIPTION_PATH: null,
+      EXPORT_URL: null
     }
   },
   methods: {
@@ -59,6 +61,8 @@ export default {
       let ConnectionConfig = response.data
       this.AUDIO_PATH = `${ConnectionConfig.baseAudioURL}${transcriptionAudioKey}`
       this.TRANSCRIPTION_PATH = `${ConnectionConfig.baseTranscriptionURL}${transcriptionAudioKey}`
+
+      this.EXPORT_URL = `${ConnectionConfig.exportURL}${transcriptionAudioKey}`
     },
     updateCurrentTime(newValue) {
       this.currentTime = newValue

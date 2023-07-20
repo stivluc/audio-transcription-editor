@@ -68,7 +68,7 @@
 
 <script>
 import axios from 'axios'
-import { saveAs } from 'file-saver'
+// import { saveAs } from 'file-saver'
 
 function divideTranscriptionWords(transcription) {
   const transcriptionWords = {}
@@ -119,6 +119,11 @@ function reconstructSentences(transcription, transcriptionWords) {
 export default {
   props: {
     transcriptionURL: {
+      type: String,
+      default: null
+    },
+
+    exportURL: {
       type: String,
       default: null
     },
@@ -219,17 +224,34 @@ export default {
     resumeAudio() {
       this.$emit('resume-audio')
     },
-    exportData() {
+    async exportData() {
+      console.log(`exporting to: ${this.exportURL}`)
+
       const reconstructedSentences = reconstructSentences(
         this.transcription,
         this.transcriptionWords.filter((word) => word.Corrected.trim() !== '') // Remove deleted words
       )
 
       const exportedData = JSON.stringify(reconstructedSentences, null, 2)
-
+      // console.log(`exporting:`, exportedData)
       // Open the file save dialog
-      const blob = new Blob([exportedData], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, 'finalTranscription.json')
+      // const blob = new Blob([exportedData], { type: 'text/plain;charset=utf-8' })
+      // saveAs(blob, 'finalTranscription.json')
+
+      axios
+        .post(this.exportURL, exportedData, {
+          headers: {
+            // Overwrite Axios's automatically set Content-Type
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(() => {
+          alert('Transcription Edits Posted! You may return to pip!')
+        })
+        .catch(function (error) {
+          alert('There was an error posting your Transcription!')
+          console.log(error.toJSON())
+        })
     }
   },
   watch: {

@@ -1,4 +1,5 @@
 {
-  "baseAudioURL": "/data/",
-  "baseTranscriptionURL": "/data/"
+    "baseAudioURL": "https://pipuat.ldh.la.gov/HIDS/downloadAudio$tranID=",
+    "baseTranscriptionURL": "https://pipuat.ldh.la.gov/HIDS/saveUpdateWordDoc$tranID=",
+    "exportURL": "https://pipuat.ldh.la.gov/HIDS/saveUpdateWordDoc$tranID="
 }
