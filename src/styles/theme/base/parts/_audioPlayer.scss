@@ -43,7 +43,7 @@ $player-timeline-color: $player-border-color;
       color: #2e2e2e;
       display: block;
       line-height: 0;
-      padding: 1em;
+      padding: 1rem;
       text-decoration: none;
       cursor: pointer;
 
@@ -63,6 +63,14 @@ $player-timeline-color: $player-border-color;
         display: inline-block;
         width: 1.5rem;
       }
+
+      @media screen and (max-width: 600px) {
+        padding: 0.5rem;
+
+        svg {
+          width: 1.2rem;
+        }
+      }
     }
   }
 }
@@ -70,6 +78,10 @@ $player-timeline-color: $player-border-color;
 .player-timeline-wrapper {
   padding: 8px 10px 0;
   height: 50%;
+
+  @media screen and (max-width: 600px) {
+    padding: 2px 10px 0;
+  }
 }
 
 .player-timeline {
@@ -78,6 +90,7 @@ $player-timeline-color: $player-border-color;
   position: relative;
   height: 100%;
   border-radius: 10px;
+  overflow: hidden;
 
   .player-progress,
   .player-seeker {
@@ -108,7 +121,7 @@ $player-timeline-color: $player-border-color;
   .player-time-current {
     font-weight: 600;
     padding: 0 10px;
-    width: 50px;
+    width: 66px;
   }
 
   .player-title {
@@ -118,12 +131,30 @@ $player-timeline-color: $player-border-color;
 
     text-align: center;
     position: relative;
+
+    p {
+      animation: slide-x 10s linear infinite;
+      white-space: nowrap;
+
+      @keyframes slide-x {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+    }
   }
 
   .player-time-total {
     opacity: 0.8;
     padding: 0 10px;
     min-width: 50px;
+  }
+
+  @media screen and (max-width: 600px) {
+    font-size: 12px;
   }
 }
 

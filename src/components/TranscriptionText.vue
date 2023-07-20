@@ -21,8 +21,8 @@
                       word.Corrected !== word.Init && word.Corrected !== '' && word.Init !== ''
                   }
                 ]"
-                >{{ word.Corrected.trim() === '' ? word.Init.trim() : word.Corrected.trim() }}</span
-              >
+                >{{ word.Corrected.trim() === '' ? word.Init.trim() : word.Corrected.trim() }}
+              </span>
               <span v-if="word.Corrected !== word.Init" class="previous-word">{{ word.Init }}</span>
               <span class="space">{{ ' ' }}</span>
             </template>
