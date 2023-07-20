@@ -118,6 +118,10 @@ function reconstructSentences(transcription, transcriptionWords) {
 
 export default {
   props: {
+    transcriptionURL: {
+      type: String,
+      default: null
+    },
     currentTime: {
       type: Number,
       default: 0
@@ -135,8 +139,12 @@ export default {
   },
   methods: {
     loadTranscriptions() {
+      // console.log(`loading transcriptions: ${this.transcriptionURL}`)
+      if (this.transcriptionURL == null) return
+
       axios
-        .get('/data/Sample2_Transcription.json')
+        // .get('/data/Sample2_Transcription.json')
+        .get(this.transcriptionURL)
         .then((response) => {
           const jsonData = response.data
           this.transcription = jsonData
@@ -225,6 +233,12 @@ export default {
     }
   },
   watch: {
+    transcriptionURL(value) {
+      // console.log(`in TranscriptionURL watch with: ${value}`)
+      if (value) {
+        this.loadTranscriptions()
+      }
+    },
     isMenuOpen(value) {
       if (value) {
         this.pauseAudio()

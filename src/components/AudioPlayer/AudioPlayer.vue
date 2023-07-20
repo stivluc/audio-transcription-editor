@@ -53,6 +53,7 @@
         <DownloadButton @download="download" v-show="!showVolume" />
       </div>
       <audio
+        v-if="this.file"
         ref="audio"
         :src="audioSrc"
         @loadeddata="loadAudio"
@@ -95,7 +96,8 @@ export default {
   data() {
     return {
       audio: null,
-      audioSrc: '/data/Sample2_Audio.mp3',
+      // audioSrc: '/data/Sample2_Audio.mp3',
+      audioSrc: this.file,
       currentSeconds: 0,
       currentPosition: 0,
       durationSeconds: 0,
@@ -111,6 +113,8 @@ export default {
   },
   methods: {
     loadAudio() {
+      // console.log(`in load audio: ${this.audioSrc}`)
+      if (this.audioSrc == null) return
       this.audio = new Audio()
       this.audio.src = this.audioSrc
       this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
@@ -211,6 +215,12 @@ export default {
     }
   },
   watch: {
+    file(value) {
+      // console.log(`in audio src watch with: ${value}`)
+
+      this.audioSrc = value
+      this.loadAudio()
+    },
     playing(value) {
       if (value) {
         this.timer = setInterval(() => {
