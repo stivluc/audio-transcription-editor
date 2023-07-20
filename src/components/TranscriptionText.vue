@@ -5,7 +5,7 @@
         <div
           v-for="(word, index) in transcriptionWords"
           :key="index"
-          :class="['transcription-word']"
+          :class="['transcription-word', { 'current-word': isCurrentPart(word.time_period) }]"
         >
           <v-menu :close-on-content-click="false" bottom content-class="transcription-popover">
             <template v-slot:activator="{ props }">
