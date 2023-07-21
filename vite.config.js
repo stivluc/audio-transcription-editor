@@ -6,6 +6,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 
 // plugin to inject css in js for export
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import NestedAppConfig from './NestedApp.config.json'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,7 +18,7 @@ export default defineConfig({
       output: {
         entryFileNames: `[name].js`,
         chunkFileNames: `[name].js`,
-        assetFileNames: `[name].[ext]`
+        assetFileNames: `${NestedAppConfig.nestedAppName}_assets/[name].[ext]`
       }
     }
   },
