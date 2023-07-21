@@ -91,14 +91,12 @@
   }
 }
 
-
-.transcription-word{
-  
-    &.current-word{
-      z-index: 0;
-    }
+.transcription-word {
+  &.current-word {
+    z-index: 0;
+  }
 }
-.space{
+.space {
   background-color: transparent;
 }
 
@@ -106,16 +104,16 @@
   z-index: 1;
   background-color: yellow;
   position: relative;
-  
-  &::after{
-    content: "";
+
+  &::after {
+    content: '';
     z-index: -1;
-    position:absolute;
-    display:block;
+    position: absolute;
+    display: block;
     left: -50vw;
-    top:0;
+    top: 0;
     width: 100vw;
     height: 100%;
-    background-color: rgba(200,200,255,.5);
+    background-color: rgba(200, 200, 255, 0.5);
   }
 }

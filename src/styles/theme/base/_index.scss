@@ -1,12 +1,11 @@
 // file used to import theme varibles/mixins that are to be made accessible to the
 // entire Vue application
-@import "animations";
-@import "variables";
-@import "mixins";
+@import 'animations';
+@import 'variables';
+@import 'mixins';
 
-@import "parts";
-
+@import 'parts';
 
 header {
-    background: #fff;
+  background: #fff;
 }

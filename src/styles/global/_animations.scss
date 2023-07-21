@@ -11,85 +11,85 @@ $transition_speed: $transition_speed_quick;
 /* DEFINE THE ANIMATION KEYFRAMES */
 
 @keyframes fadein {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeout {
-    0% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes flyin_R {
-    0% {
-        transform: translateX(50%);
-        opacity: 0;
-    }
-    100% {
-        transform: translateX(0);
-        opacity: 1;
-    }
+  0% {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes flyout_R {
-    0% {
-        transform: translateX(0);
-        // right:0;
-        opacity: 1;
-    }
-    100% {
-        transform: translateX(50%);
-        // right: 100%;
-        opacity: 0;
-    }
+  0% {
+    transform: translateX(0);
+    // right:0;
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(50%);
+    // right: 100%;
+    opacity: 0;
+  }
 }
 
 @keyframes expand {
-    0% {
-        transform: scaleX(0);
-        // width:0;
-    }
-    100% {
-        transform: scaleX(1);
-    }
+  0% {
+    transform: scaleX(0);
+    // width:0;
+  }
+  100% {
+    transform: scaleX(1);
+  }
 }
 
 @keyframes collapse {
-    0% {
-        transform: scaleX(1);
-    }
-    100% {
-        transform: scaleX(0);
-        // width: 0;
-    }
+  0% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+    // width: 0;
+  }
 }
 
 @keyframes expand_vert {
-    0% {
-        transform: scaleY(0);
-        // height: 0;
-    }
-    100% {
-        transform: scaleY(1);
-    }
+  0% {
+    transform: scaleY(0);
+    // height: 0;
+  }
+  100% {
+    transform: scaleY(1);
+  }
 }
 
 @keyframes collapse_vert {
-    0% {
-        transform: scaleY(1);
-    }
-    100% {
-        // height: 0;
-        transform: scaleY(0);
-    }
+  0% {
+    transform: scaleY(1);
+  }
+  100% {
+    // height: 0;
+    transform: scaleY(0);
+  }
 }
 
 /* ***********************************

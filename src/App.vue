@@ -57,7 +57,9 @@ export default {
 
       // get the connection configuration
       // console.log(`${window.location.origin}/connection.config.json`)
-      let response = await axios.get(`${window.location.origin}/connection.config.json`)
+      let response = await axios.get(
+        `${window.location.origin}/TranscriptionApp_assets/connection.config.json`
+      )
       let ConnectionConfig = response.data
       this.AUDIO_PATH = `${ConnectionConfig.baseAudioURL}${transcriptionAudioKey}`
       this.TRANSCRIPTION_PATH = `${ConnectionConfig.baseTranscriptionURL}${transcriptionAudioKey}`

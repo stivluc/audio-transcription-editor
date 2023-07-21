@@ -1,22 +1,27 @@
-@import 'normalize';
+// @import 'normalize';
 @import 'global';
 
 // browser reset
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+// * {
+//   box-sizing: border-box;
+//   padding: 0;
+//   margin: 0;
+// }
 
-.v-application {
-  [class*='text-'] {
+#transcriptionApp {
+  .v-application {
+    [class*='text-'] {
+      font-family: 'Montserrat', sans-serif !important;
+    }
     font-family: 'Montserrat', sans-serif !important;
   }
-  font-family: 'Montserrat', sans-serif !important;
 }
 
 // import structural layout
 @import 'layout';
 
-// import styling theme
-@import 'theme';
+#transcriptionApp {
+  // import styling theme
+  @import 'theme';
+
+}
