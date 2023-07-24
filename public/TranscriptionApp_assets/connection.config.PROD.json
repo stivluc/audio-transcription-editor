@@ -1,0 +1,16 @@
+{
+  "Audio": {
+    "baseURL": "HIDS/downloadAudio",
+    "params": ["tranID"]
+  },
+
+  "Transcription": {
+    "baseURL": "HIDS/downloadJSON",
+    "params": ["hidsGUID"]
+  },
+
+  "Export": {
+    "baseURL": "HIDS/updateJson",
+    "params": ["hidsGUID", "myJson"]
+  }
+}

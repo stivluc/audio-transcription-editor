@@ -12,6 +12,7 @@
         :currentTime="currentTime"
         :transcriptionURL="TRANSCRIPTION_PATH"
         :exportURL="EXPORT_URL"
+        :transcriptionKey="TRANSCRIPTION_GUID"
         @pause-audio="pauseAudio"
         @resume-audio="resumeAudio"
       />
@@ -23,12 +24,15 @@
 import AudioPlayer from './components/AudioPlayer/AudioPlayer.vue'
 import TranscriptionText from './components/TranscriptionText.vue'
 import axios from 'axios'
-
+import { generateURL } from './utils/URL_Utils.js'
 // import ConnectionConfig from '/connection.config.json'
 
 export default {
   name: 'App',
   mounted() {
+    const urlParams = new URLSearchParams(window.location.search)
+    this.TRANSCRIPTION_GUID = urlParams.get('key')
+
     this.FetchAudio()
   },
   components: {
@@ -47,24 +51,37 @@ export default {
       // AUDIO_PATH: '/data/Sample2_Audio.wav'
       AUDIO_PATH: null,
       TRANSCRIPTION_PATH: null,
+      TRANSCRIPTION_GUID: null,
       EXPORT_URL: null
     }
   },
   methods: {
     async FetchAudio() {
-      const urlParams = new URLSearchParams(window.location.search)
-      const transcriptionAudioKey = urlParams.get('key')
-
       // get the connection configuration
       // console.log(`${window.location.origin}/connection.config.json`)
       let response = await axios.get(
-        `${window.location.origin}/TranscriptionApp_assets/connection.config.json`
+        // `${window.location.origin}/TranscriptionApp_assets/connection.config.DEV.json`
+        `TranscriptionApp_assets/connection.config.PROD.json`
       )
       let ConnectionConfig = response.data
-      this.AUDIO_PATH = `${ConnectionConfig.baseAudioURL}${transcriptionAudioKey}`
-      this.TRANSCRIPTION_PATH = `${ConnectionConfig.baseTranscriptionURL}${transcriptionAudioKey}`
+      // this.AUDIO_PATH = `${ConnectionConfig.baseAudioURL}${this.TRANSCRIPTION_GUID}`
+      // this.TRANSCRIPTION_PATH = `${ConnectionConfig.baseTranscriptionURL}${this.TRANSCRIPTION_GUID}`
 
-      this.EXPORT_URL = `${ConnectionConfig.exportURL}${transcriptionAudioKey}`
+      this.AUDIO_PATH = generateURL(ConnectionConfig.Audio.baseURL, {
+        tranID: this.TRANSCRIPTION_GUID
+      })
+
+      // this.AUDIO_PATH = `${ConnectionConfig.Audio.baseURL}${this.TRANSCRIPTION_GUID}`
+
+      this.TRANSCRIPTION_PATH = generateURL(ConnectionConfig.Transcription.baseURL, {
+        hidsGUID: this.TRANSCRIPTION_GUID
+      })
+      // this.TRANSCRIPTION_PATH = `${ConnectionConfig.Transcription.baseURL}${this.TRANSCRIPTION_GUID}`
+
+      // this.AUDIO_PATH = `/data/Sample2_Audio.mp3`
+      // this.TRANSCRIPTION_PATH = `/data/Sample2_Transcription.json`
+
+      this.EXPORT_URL = `${ConnectionConfig.Export.baseURL}`
     },
     updateCurrentTime(newValue) {
       this.currentTime = newValue

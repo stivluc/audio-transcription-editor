@@ -68,6 +68,7 @@
 
 <script>
 import axios from 'axios'
+import { generateURL } from '@/utils/URL_Utils.js'
 // import { saveAs } from 'file-saver'
 
 function divideTranscriptionWords(transcription) {
@@ -119,6 +120,10 @@ function reconstructSentences(transcription, transcriptionWords) {
 export default {
   props: {
     transcriptionURL: {
+      type: String,
+      default: null
+    },
+    transcriptionKey: {
       type: String,
       default: null
     },
@@ -233,18 +238,31 @@ export default {
       )
 
       const exportedData = JSON.stringify(reconstructedSentences, null, 2)
-      // console.log(`exporting:`, exportedData)
-      // Open the file save dialog
-      // const blob = new Blob([exportedData], { type: 'text/plain;charset=utf-8' })
-      // saveAs(blob, 'finalTranscription.json')
+
+      let uploadURL = generateURL(
+        this.exportURL
+        //, {
+        // hidsGUID: this.transcriptionKey,
+        // myJson: exportedData
+        //}
+      )
+
+      console.log(uploadURL)
 
       axios
-        .post(this.exportURL, exportedData, {
-          headers: {
-            // Overwrite Axios's automatically set Content-Type
-            'Content-Type': 'application/json'
+        .post(
+          uploadURL,
+          {
+            hidsGUID: this.transcriptionKey,
+            myJson: exportedData
+          },
+          {
+            headers: {
+              // Overwrite Axios's automatically set Content-Type
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        })
+        )
         .then(() => {
           alert('Transcription Edits Posted! You may return to pip!')
         })

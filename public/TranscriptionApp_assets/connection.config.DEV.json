@@ -1,0 +1,16 @@
+{
+  "Audio": {
+    "baseURL": "/data/Sample2_Audio.mp3",
+    "params": []
+  },
+
+  "Transcription": {
+    "baseURL": "/data/Sample2_Transcription.json",
+    "params": []
+  },
+
+  "Export": {
+    "baseURL": "https://pipuat.ldh.la.gov/HIDS/downloadJSON",
+    "params": []
+  }
+}
