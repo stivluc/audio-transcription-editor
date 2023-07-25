@@ -56,7 +56,7 @@
         v-if="this.file"
         ref="audio"
         :src="audioSrc"
-        @loadeddata="loadAudio"
+        @loadeddata="loadeddata_evt"
         @pause="playing = false"
         @play="playing = true"
         preload="auto"
@@ -112,17 +112,21 @@ export default {
     }
   },
   methods: {
+    loadeddata_evt() {
+      if (!this.audio) return
+      this.durationSeconds = Math.floor(this.audio.duration)
+      this.loaded = true
+    },
     loadAudio() {
       // console.log(`in load audio: ${this.audioSrc}`)
       if (this.audioSrc == null) return
+
+      console.log(`Loading Audio: ${this.audioSrc}`)
       this.audio = new Audio()
       this.audio.src = this.audioSrc
       this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
 
-      this.audio.addEventListener('loadeddata', () => {
-        this.durationSeconds = Math.floor(this.audio.duration)
-        this.loaded = true
-      })
+      // this.audio.addEventListener('loadeddata', this.loadeddata_evt)
       this.audio.addEventListener('ended', () => {
         this.stop()
       })
@@ -218,7 +222,7 @@ export default {
     file(value) {
       // console.log(`in audio src watch with: ${value}`)
 
-      this.audioSrc = value
+      if (value != this.audioSrc) this.audioSrc = value
       this.loadAudio()
     },
     playing(value) {
