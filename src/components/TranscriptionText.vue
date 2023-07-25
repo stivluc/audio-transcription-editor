@@ -326,7 +326,7 @@ export default {
           this.getCurrentWord_element().scrollIntoView({
             //   top: this.highlightedWord_offset() - buffer,
             behavior: 'smooth',
-            block: 'nearest'
+            block: 'center'
           })
           // console.log('out of bounds, scroll to nearest word ')
         }
