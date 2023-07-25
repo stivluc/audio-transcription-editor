@@ -1,5 +1,5 @@
 <template>
-  <div class="transcription-container">
+  <div ref="container" class="transcription-container">
     <div class="transcription-content">
       <div class="transcription-text">
         <div
@@ -157,6 +157,26 @@ export default {
     }
   },
   methods: {
+    getCurrentWord_element() {
+      return this.$refs.container.querySelector('.highlighted-word')
+    },
+
+    highlightedWord_offset() {
+      let currentWord = this.getCurrentWord_element()
+      let offset = 0
+      if (currentWord) {
+        let container_offset = this.$refs.container.getBoundingClientRect().top
+        let word_offset = this.getCurrentWord_element().getBoundingClientRect().top
+        offset = word_offset - container_offset
+      }
+
+      return offset
+    },
+
+    transcriptionContainer_height() {
+      return this.$refs.container.offsetHeight
+    },
+
     loadTranscriptions() {
       // console.log(`loading transcriptions: ${this.transcriptionURL}`)
       if (this.transcriptionURL == null) return
@@ -293,6 +313,23 @@ export default {
         this.pauseAudio()
       } else {
         this.resumeAudio()
+      }
+    },
+    currentTime() {
+      let buffer = this.transcriptionContainer_height() * 0.1
+
+      if (this.getCurrentWord_element()) {
+        let outOfBounds =
+          this.highlightedWord_offset() + buffer > this.transcriptionContainer_height() ||
+          this.highlightedWord_offset() - buffer < 0
+        if (outOfBounds) {
+          this.getCurrentWord_element().scrollIntoView({
+            //   top: this.highlightedWord_offset() - buffer,
+            behavior: 'smooth',
+            block: 'nearest'
+          })
+          // console.log('out of bounds, scroll to nearest word ')
+        }
       }
     }
   },
