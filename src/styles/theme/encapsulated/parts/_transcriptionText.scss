@@ -1,0 +1,5 @@
+.transcription-container{
+  // height: calc(100% - #{$player_height} - #{$export_height})
+  flex-shrink: 1;
+  overflow: auto;
+}

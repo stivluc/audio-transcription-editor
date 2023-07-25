@@ -1,5 +1,17 @@
-// @import 'normalize';
+
+
 @import 'global';
+
+
+.reset-styles {
+  
+  all:initial;
+  padding:0;
+  margin: 0;
+  box-sizing: inherit;
+  
+}
+
 
 // browser reset
 // * {
@@ -8,20 +20,24 @@
 //   margin: 0;
 // }
 
+
+// import structural layout
+@import 'layout';
+
 #transcriptionApp {
+  #app{
+    height:100%;
+    width: 100%;
+  }
   .v-application {
     [class*='text-'] {
       font-family: 'Montserrat', sans-serif !important;
     }
     font-family: 'Montserrat', sans-serif !important;
   }
-}
-
-// import structural layout
-@import 'layout';
-
-#transcriptionApp {
   // import styling theme
-  @import 'theme';
+  
 
 }
+@import 'theme';
+@import 'theme/encapsulated';

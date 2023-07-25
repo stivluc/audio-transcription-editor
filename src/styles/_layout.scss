@@ -1,20 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
 
 #transcriptionApp {
-  display: grid;
-  // grid-template-columns: 1fr 1fr;
-  // padding: 0 2rem;
-  grid-template-rows: max-content auto;
-  grid-template-areas:
-    'header'
-    'content';
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
+
+  // display: grid;
+  // // grid-template-columns: 1fr 1fr;
+  // // padding: 0 2rem;
+  // grid-template-rows: max-content auto;
+  // grid-template-areas:
+  //   'header'
+  //   'content';
+
+  width: 100%;
+  margin:auto;
 
   // background-color: #fafafa;
   
 
   #editor {
     margin: auto;
-    max-width: 1200px;
+    // max-width: 1200px;
+    max-height: 100%;
+
+    
   }
 
   header {
