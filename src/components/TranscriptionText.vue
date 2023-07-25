@@ -75,8 +75,17 @@ function divideTranscriptionWords(transcription) {
   const transcriptionWords = {}
 
   transcription.forEach((sentence) => {
-    const words = sentence.Init.trim().split(/\s+/) // Create an array with the words within a sentence
+    // create an array with the words in a sentence,
+    // Use Corrected words if they exist, otherwise use the Init (AI) values
+    const words = sentence.Corrected
+      ? sentence.Corrected.trim().split(/\s+/)
+      : sentence.Init.trim().split(/\s+/)
+
+    // const corrections = sentence.Corrected.trim().split(/\s+/) // Create an array with the words within a sentence
     const step = (sentence.time_period[1] - sentence.time_period[0]) / words.length // Calculate the approximate time by word for the audio based on the time_period divided by the number of words
+
+    // console.log("init:", words);
+    // console.log('corrections:', corrections)
 
     words.forEach((value, index) => {
       const start = sentence.time_period[0] + index * step

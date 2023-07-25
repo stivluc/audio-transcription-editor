@@ -57,26 +57,30 @@ export default {
   },
   methods: {
     async FetchAudio() {
-      // get the connection configuration
-      // console.log(`${window.location.origin}/connection.config.json`)
-      let response = await axios.get(
-        // `${window.location.origin}/TranscriptionApp_assets/connection.config.DEV.json`
-        `TranscriptionApp_assets/connection.config.PROD.json`
-      )
+      let DEV = true
+
+      let CONFIG_URL = DEV
+        ? `TranscriptionApp_assets/connection.config.DEV.json`
+        : `TranscriptionApp_assets/connection.config.PROD.json`
+
+      console.log(`Using Dev configuration: ${CONFIG_URL}`)
+      // load configuration
+      let response = await axios.get(CONFIG_URL)
       let ConnectionConfig = response.data
       // this.AUDIO_PATH = `${ConnectionConfig.baseAudioURL}${this.TRANSCRIPTION_GUID}`
       // this.TRANSCRIPTION_PATH = `${ConnectionConfig.baseTranscriptionURL}${this.TRANSCRIPTION_GUID}`
 
-      this.AUDIO_PATH = generateURL(ConnectionConfig.Audio.baseURL, {
-        tranID: this.TRANSCRIPTION_GUID
-      })
+      this.AUDIO_PATH = DEV
+        ? generateURL(ConnectionConfig.Audio.baseURL)
+        : generateURL(ConnectionConfig.Audio.baseURL, {
+            tranID: this.TRANSCRIPTION_GUID
+          })
 
-      // this.AUDIO_PATH = `${ConnectionConfig.Audio.baseURL}${this.TRANSCRIPTION_GUID}`
-
-      this.TRANSCRIPTION_PATH = generateURL(ConnectionConfig.Transcription.baseURL, {
-        hidsGUID: this.TRANSCRIPTION_GUID
-      })
-      // this.TRANSCRIPTION_PATH = `${ConnectionConfig.Transcription.baseURL}${this.TRANSCRIPTION_GUID}`
+      this.TRANSCRIPTION_PATH = DEV
+        ? generateURL(ConnectionConfig.Transcription.baseURL)
+        : generateURL(ConnectionConfig.Transcription.baseURL, {
+            hidsGUID: this.TRANSCRIPTION_GUID
+          })
 
       // this.AUDIO_PATH = `/data/Sample2_Audio.mp3`
       // this.TRANSCRIPTION_PATH = `/data/Sample2_Transcription.json`

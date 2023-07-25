@@ -5,12 +5,12 @@
   },
 
   "Transcription": {
-    "baseURL": "/data/Sample2_Transcription.json",
+    "baseURL": "/data/Sample2_TranscriptionCorrected.json",
     "params": []
   },
 
   "Export": {
-    "baseURL": "https://pipuat.ldh.la.gov/HIDS/downloadJSON",
+    "baseURL": "https://pipuat.ldh.la.gov/HIDS/updateJSON",
     "params": []
   }
 }
