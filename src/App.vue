@@ -31,8 +31,9 @@ export default {
   name: 'App',
   mounted() {
     const urlParams = new URLSearchParams(window.location.search)
-    this.TRANSCRIPTION_GUID = urlParams.get('key')
+    this.TRANSCRIPTION_GUID = CURRENT_TRANSCRIPTION || urlParams.get('key')
 
+    console.log('Transcription Editor recieved GUID: ', this.TRANSCRIPTION_GUID)
     this.FetchAudio()
   },
   components: {
