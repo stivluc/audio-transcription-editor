@@ -21,4 +21,19 @@
     <div id="transcriptionApp" class="reset-styles"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
+
+  <script>
+
+      let BROWSER_APP = document.querySelector(`#transcriptionApp`)
+
+      // listen for app to be ready
+      BROWSER_APP.addEventListener("TranscriptionEditor_Initialized", (evt) => {
+        console.log("app ready for events")
+
+        // Send event to set GUID
+        BROWSER_APP.dispatchEvent(new CustomEvent('TranscriptionEditor_LoadGUID', {
+          detail: {GUID: "1234567890"}
+        }))
+      })
+  </script>
 </html>
