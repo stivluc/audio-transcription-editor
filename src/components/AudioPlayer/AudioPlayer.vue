@@ -20,8 +20,11 @@
           </div>
           <div class="player-time">
             <div class="player-time-current">{{ formattedCurrentTime }}</div>
+
+            <!-- show status message until title is available -->
             <div class="player-title">
-              <p>{{ title }}</p>
+              <p v-if="title != ''">{{ title }}</p>
+              <p v-else>{{ this.audioStatus }}</p>
             </div>
             <div class="player-time-total">{{ formattedDuration }}</div>
           </div>
@@ -53,10 +56,11 @@
         <DownloadButton @download="download" v-show="!showVolume" />
       </div>
       <audio
-        v-if="this.file"
+        v-if="this.audioSrc"
         ref="audio"
         :src="audioSrc"
-        @loadeddata="loadeddata_evt"
+        @durationchange="audioTrackLoaded_evt"
+        @loadeddata="audioFrameLoaded_evt"
         @pause="playing = false"
         @play="playing = true"
         preload="auto"
@@ -97,6 +101,7 @@ export default {
     return {
       audio: null,
       // audioSrc: '/data/Sample2_Audio.mp3',
+      audioStatus: 'No Audio Loaded',
       audioSrc: this.file,
       currentSeconds: 0,
       currentPosition: 0,
@@ -112,25 +117,27 @@ export default {
     }
   },
   methods: {
-    loadeddata_evt() {
-      if (!this.audio) return
-      this.durationSeconds = Math.floor(this.audio.duration)
-      this.loaded = true
-    },
+    // -------------------------------------------
+    // SETUP
+    // -------------------------------------------
     loadAudio() {
       // console.log(`in load audio: ${this.audioSrc}`)
       if (this.audioSrc == null) return
 
       console.log(`Loading Audio: ${this.audioSrc}`)
+      // this.audioStatus = 'Loading Audio...'
       this.audio = new Audio()
       this.audio.src = this.audioSrc
-      this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
 
       // this.audio.addEventListener('loadeddata', this.loadeddata_evt)
       this.audio.addEventListener('ended', () => {
         this.stop()
       })
     },
+
+    // -------------------------------------------
+    // CONTROLS
+    // -------------------------------------------
     togglePlayback() {
       this.playing = !this.playing
     },
@@ -186,6 +193,20 @@ export default {
 
       // Programmatically click the link to trigger the download
       link.click()
+    },
+
+    // -------------------------------------------
+    // INTERFACE EVENTS
+    // -------------------------------------------
+    audioTrackLoaded_evt() {
+      console.log(`Audio Loaded!`)
+      this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
+    },
+    audioFrameLoaded_evt() {
+      if (!this.audio) return
+      this.durationSeconds = Math.floor(this.audio.duration)
+
+      this.loaded = true
     }
   },
   computed: {
@@ -221,9 +242,13 @@ export default {
   watch: {
     file(value) {
       // console.log(`in audio src watch with: ${value}`)
+      if (value) {
+        if (value != this.audioSrc) this.audioSrc = value
 
-      if (value != this.audioSrc) this.audioSrc = value
-      this.loadAudio()
+        this.loadAudio()
+      } else {
+        this.audioStatus = 'No Audio Loaded'
+      }
     },
     playing(value) {
       if (value) {

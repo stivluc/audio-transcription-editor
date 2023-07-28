@@ -1,6 +1,6 @@
 {
   "Audio": {
-    "baseURL": "HIDS/downloadAudio",
+    "baseURL": "HIDS/downloadAudioForJson",
     "params": ["tranID"]
   },
 

@@ -2,7 +2,13 @@
   <div ref="container" class="transcription-container">
     <div class="transcription-content">
       <div class="transcription-text">
+        <!-- add a status message for when transcription not loaded -->
+        <div class="transcription-status" v-if="Object.keys(transcriptionWords).length == 0">
+          {{ this.transcriptionStatus }}
+        </div>
+
         <div
+          v-else
           v-for="(word, index) in transcriptionWords"
           :key="index"
           :class="['transcription-word', { 'current-word': isCurrentPart(word.time_period) }]"
@@ -69,7 +75,7 @@
 <script>
 import axios from 'axios'
 import { generateURL } from '@/utils/URL_Utils.js'
-// import { saveAs } from 'file-saver'
+import { saveAs } from 'file-saver'
 
 function divideTranscriptionWords(transcription) {
   const transcriptionWords = {}
@@ -151,9 +157,21 @@ export default {
     return {
       transcription: {},
       transcriptionWords: {},
+      transcriptionStatus: 'No Transcription Loaded',
       popoverIndex: null,
       isEditing: false,
       isMenuOpen: false
+    }
+  },
+  mounted() {
+    this.loadTranscriptions()
+
+    // define method of manual download of transcription data
+    document.MANUAL_TRANSCRIPT_DOWNLOAD = () => {
+      // Open the file save dialog
+      let exportData = this.getExportData()
+      const blob = new Blob([exportData], { type: 'text/plain;charset=utf-8' })
+      saveAs(blob, 'finalTranscription.json')
     }
   },
   methods: {
@@ -180,7 +198,7 @@ export default {
     loadTranscriptions() {
       // console.log(`loading transcriptions: ${this.transcriptionURL}`)
       if (this.transcriptionURL == null) return
-
+      this.transcriptionStatus = 'Loading Transcription...'
       axios
         // .get('/data/Sample2_Transcription.json')
         .get(this.transcriptionURL)
@@ -191,6 +209,7 @@ export default {
         })
         .catch((error) => {
           console.error('Error loading transcriptions:', error)
+          this.transcriptionStatus = 'Transcription Loading Failed!'
         })
     },
     isCurrentPart(interval) {
@@ -258,23 +277,21 @@ export default {
     resumeAudio() {
       this.$emit('resume-audio')
     },
-    async exportData() {
-      console.log(`exporting to: ${this.exportURL}`)
 
+    getExportData() {
       const reconstructedSentences = reconstructSentences(
         this.transcription,
         this.transcriptionWords.filter((word) => word.Corrected.trim() !== '') // Remove deleted words
       )
 
-      const exportedData = JSON.stringify(reconstructedSentences, null, 2)
+      return JSON.stringify(reconstructedSentences, null, 2)
+    },
+    async exportData() {
+      console.log(`exporting to: ${this.exportURL}`)
 
-      let uploadURL = generateURL(
-        this.exportURL
-        //, {
-        // hidsGUID: this.transcriptionKey,
-        // myJson: exportedData
-        //}
-      )
+      const exportedData = this.getExportData()
+
+      let uploadURL = generateURL(this.exportURL)
 
       console.log(uploadURL)
 
@@ -306,6 +323,11 @@ export default {
       // console.log(`in TranscriptionURL watch with: ${value}`)
       if (value) {
         this.loadTranscriptions()
+      } else {
+        // remove old transcription if null (prevent memory leak)
+        this.transcription = {}
+        this.transcriptionWords = {}
+        this.transcriptionStatus = 'No Transcription Loaded'
       }
     },
     isMenuOpen(value) {
@@ -332,9 +354,6 @@ export default {
         }
       }
     }
-  },
-  mounted() {
-    this.loadTranscriptions()
   }
 }
 </script>

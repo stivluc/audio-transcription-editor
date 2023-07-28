@@ -1,16 +1,16 @@
 {
   "Audio": {
-    "baseURL": "/data/Sample2_Audio.mp3",
-    "params": []
+    "baseURL": "/data/Audio/",
+    "params": ["tranID"]
   },
 
   "Transcription": {
-    "baseURL": "/data/Sample2_TranscriptionCorrected.json",
-    "params": []
+    "baseURL": "/data/Transcription/",
+    "params": ["hidsGUID"]
   },
 
   "Export": {
-    "baseURL": "https://pipuat.ldh.la.gov/HIDS/updateJSON",
-    "params": []
+    "baseURL": "/BROKEN/",
+    "params": ["hidsGUID", "myJson"]
   }
 }

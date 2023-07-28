@@ -21,3 +21,10 @@ app.use(router)
 app.use(vuetify)
 
 app.mount(`#${NestedAppConfig.nestedAppName}`)
+
+// add an event listener to the parent to signal any external Browser if listening
+// document
+//   .querySelector(`#${NestedAppConfig.nestedAppName}`)
+//   .addEventListener('TranscriptionEditor_Initialized', () => {
+//     console.log('EVT triggered: Transcription editor app is initialized')
+//   })

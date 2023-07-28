@@ -1,22 +1,20 @@
 <template>
-  <div id="app">
-    <div id="editor">
-      <audio-player
-        :file="AUDIO_PATH"
-        ref="audioPlayer"
-        @currentTimeChange="updateCurrentTime"
-        @pause-audio="pauseAudio"
-        @resume-audio="resumeAudio"
-      />
-      <transcription-text
-        :currentTime="currentTime"
-        :transcriptionURL="TRANSCRIPTION_PATH"
-        :exportURL="EXPORT_URL"
-        :transcriptionKey="TRANSCRIPTION_GUID"
-        @pause-audio="pauseAudio"
-        @resume-audio="resumeAudio"
-      />
-    </div>
+  <div class="editor">
+    <audio-player
+      :file="AUDIO_PATH"
+      ref="audioPlayer"
+      @currentTimeChange="updateCurrentTime"
+      @pause-audio="pauseAudio"
+      @resume-audio="resumeAudio"
+    />
+    <transcription-text
+      :currentTime="currentTime"
+      :transcriptionURL="TRANSCRIPTION_PATH"
+      :exportURL="EXPORT_URL"
+      :transcriptionKey="TRANSCRIPTION_GUID"
+      @pause-audio="pauseAudio"
+      @resume-audio="resumeAudio"
+    />
   </div>
 </template>
 
@@ -25,17 +23,24 @@ import AudioPlayer from './components/AudioPlayer/AudioPlayer.vue'
 import TranscriptionText from './components/TranscriptionText.vue'
 import axios from 'axios'
 import { generateURL } from './utils/URL_Utils.js'
-// import ConnectionConfig from '/connection.config.json'
 
 export default {
   name: 'App',
   mounted() {
-    const urlParams = new URLSearchParams(window.location.search)
-    this.TRANSCRIPTION_GUID = CURRENT_TRANSCRIPTION || urlParams.get('key')
+    // const urlParams = new URLSearchParams(window.location.search)
+    // // this.TRANSCRIPTION_GUID = CURRENT_TRANSCRIPTION || urlParams.get('key')
+    // this.TRANSCRIPTION_GUID = null
+    // console.log('Transcription Editor recieved GUID: ', this.TRANSCRIPTION_GUID)
 
-    console.log('Transcription Editor recieved GUID: ', this.TRANSCRIPTION_GUID)
-    this.FetchAudio()
+    this.bind_default_events()
+
+    this.init()
   },
+
+  beforeUnmount() {
+    this.remove_bound_events()
+  },
+
   components: {
     AudioPlayer,
     TranscriptionText
@@ -47,9 +52,11 @@ export default {
   },
   data() {
     return {
+      IS_DEV: true,
       currentTime: 0,
-      // AUDIO_PATH: ConnectionConfig + 'Yodel_Sound_Effect.mp3'
+      // AUDIO_PATH: this.CONNECTION_CONFIG + 'Yodel_Sound_Effect.mp3'
       // AUDIO_PATH: '/data/Sample2_Audio.wav'
+      CONNECTION_CONFIG: null,
       AUDIO_PATH: null,
       TRANSCRIPTION_PATH: null,
       TRANSCRIPTION_GUID: null,
@@ -57,37 +64,44 @@ export default {
     }
   },
   methods: {
-    async FetchAudio() {
-      let DEV = true
-
-      let CONFIG_URL = DEV
+    async init() {
+      let CONFIG_URL = this.IS_DEV
         ? `TranscriptionApp_assets/connection.config.DEV.json`
         : `TranscriptionApp_assets/connection.config.PROD.json`
 
-      console.log(`Using Dev configuration: ${CONFIG_URL}`)
+      if (this.IS_DEV) console.log(`Using Development Configuration File.`)
+
+      if (this.IS_DEV) this.TRANSCRIPTION_GUID = 'DEV'
+
       // load configuration
       let response = await axios.get(CONFIG_URL)
-      let ConnectionConfig = response.data
-      // this.AUDIO_PATH = `${ConnectionConfig.baseAudioURL}${this.TRANSCRIPTION_GUID}`
-      // this.TRANSCRIPTION_PATH = `${ConnectionConfig.baseTranscriptionURL}${this.TRANSCRIPTION_GUID}`
+      this.CONNECTION_CONFIG = response.data
 
-      this.AUDIO_PATH = DEV
-        ? generateURL(ConnectionConfig.Audio.baseURL)
-        : generateURL(ConnectionConfig.Audio.baseURL, {
-            tranID: this.TRANSCRIPTION_GUID
-          })
+      this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL, {
+        tranID: this.TRANSCRIPTION_GUID
+      })
 
-      this.TRANSCRIPTION_PATH = DEV
-        ? generateURL(ConnectionConfig.Transcription.baseURL)
-        : generateURL(ConnectionConfig.Transcription.baseURL, {
-            hidsGUID: this.TRANSCRIPTION_GUID
-          })
+      this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL, {
+        hidsGUID: this.TRANSCRIPTION_GUID
+      })
+      // this.AUDIO_PATH = this.IS_DEV
+      //   ? generateURL(this.CONNECTION_CONFIG.Audio.baseURL)
+      //   : generateURL(this.CONNECTION_CONFIG.Audio.baseURL, {
+      //       tranID: this.TRANSCRIPTION_GUID
+      //     })
 
-      // this.AUDIO_PATH = `/data/Sample2_Audio.mp3`
-      // this.TRANSCRIPTION_PATH = `/data/Sample2_Transcription.json`
+      // this.TRANSCRIPTION_PATH = this.IS_DEV
+      //   ? generateURL(this.CONNECTION_CONFIG.Transcription.baseURL)
+      //   : generateURL(this.CONNECTION_CONFIG.Transcription.baseURL, {
+      //       hidsGUID: this.TRANSCRIPTION_GUID
+      //     })
 
-      this.EXPORT_URL = `${ConnectionConfig.Export.baseURL}`
+      this.EXPORT_URL = `${this.CONNECTION_CONFIG.Export.baseURL}`
+
+      // signal any listeners that the app is initialized
+      this.$el.parentElement.dispatchEvent(new Event('TranscriptionEditor_Initialized'))
     },
+
     updateCurrentTime(newValue) {
       this.currentTime = newValue
     },
@@ -98,6 +112,43 @@ export default {
     // Method to resume audio playing
     resumeAudio() {
       this.$refs.audioPlayer.resumeAudio()
+    },
+
+    // ------------------------------------
+    //  DOM event listeners
+    // ------------------------------------
+    bind_default_events() {
+      // binding several events to trigger actions from external browser
+      this.$el.parentElement.addEventListener(
+        'TranscriptionEditor_LoadGUID',
+        this.DOMEvent_loadGuid
+      )
+
+      // this.$el.addEventListener('LoadGUID')
+    },
+
+    remove_bound_events() {
+      // cleanup
+      this.$el.parentElement.removeEventListener('TranscriptionEditor_LoadGUID')
+    },
+
+    DOMEvent_loadGuid(evt) {
+      console.log('Load GUID Event triggered')
+
+      let param_guid = evt.detail.GUID
+
+      this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL)
+      this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL)
+
+      this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL, {
+        tranID: param_guid
+      })
+
+      this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL, {
+        hidsGUID: param_guid
+      })
+
+      this.EXPORT_URL = `${this.CONNECTION_CONFIG.Export.baseURL}`
     }
   }
 }
