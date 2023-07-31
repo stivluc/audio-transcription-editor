@@ -24,7 +24,7 @@
 // import structural layout
 @import 'layout';
 
-#transcriptionApp {
+.TranscriptionEditor {
   
     height:100%;
     width: 100%;
@@ -39,5 +39,7 @@
   
 
 }
+
+
 @import 'theme';
 @import 'theme/encapsulated';

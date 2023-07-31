@@ -1,5 +1,5 @@
 
-#transcriptionApp {
+.TranscriptionEditor {
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
 
   // display: grid;
@@ -19,6 +19,8 @@
   .editor {
     margin: auto;
     // max-width: 1200px;
+    height: 100%;
+    width: 100%;
     max-height: 100%;
 
     

@@ -1,11 +1,11 @@
 {
   "Audio": {
-    "baseURL": "/data/Audio/",
+    "baseURL": "/data/Audio/DEV.mp3",
     "params": ["tranID"]
   },
 
   "Transcription": {
-    "baseURL": "/data/Transcription/",
+    "baseURL": "/data/Transcription/DEV.json",
     "params": ["hidsGUID"]
   },
 

@@ -63,6 +63,8 @@
         @loadeddata="audioFrameLoaded_evt"
         @pause="playing = false"
         @play="playing = true"
+        @ended="audioEnded_evt"
+        @error="audioError_evt"
         preload="auto"
         style="display: none"
       ></audio>
@@ -102,7 +104,7 @@ export default {
       audio: null,
       // audioSrc: '/data/Sample2_Audio.mp3',
       audioStatus: 'No Audio Loaded',
-      audioSrc: this.file,
+      audioSrc: null,
       currentSeconds: 0,
       currentPosition: 0,
       durationSeconds: 0,
@@ -116,97 +118,35 @@ export default {
       timer: null
     }
   },
-  methods: {
-    // -------------------------------------------
-    // SETUP
-    // -------------------------------------------
-    loadAudio() {
-      // console.log(`in load audio: ${this.audioSrc}`)
-      if (this.audioSrc == null) return
+  watch: {
+    file(value) {
+      // console.log(`AudioFile Changed
+      // from: ${this.audioSrc},
+      // to: ${value}`)
 
-      console.log(`Loading Audio: ${this.audioSrc}`)
-      // this.audioStatus = 'Loading Audio...'
-      this.audio = new Audio()
-      this.audio.src = this.audioSrc
+      // console.log(`in audio src watch with: ${value}`)
+      if (value != this.audioSrc)
+        if (value) {
+          if (value != this.audioSrc) this.audioSrc = value
 
-      // this.audio.addEventListener('loadeddata', this.loadeddata_evt)
-      this.audio.addEventListener('ended', () => {
-        this.stop()
-      })
+          this.loadAudio()
+        } else {
+          this.audioStatus = 'No Audio Loaded'
+        }
     },
-
-    // -------------------------------------------
-    // CONTROLS
-    // -------------------------------------------
-    togglePlayback() {
-      this.playing = !this.playing
-    },
-    pauseAudio() {
-      this.playing = false
-    },
-    // Method to resume audio playing
-    resumeAudio() {
-      this.playing = true
-    },
-    stop() {
-      this.playing = false
-      if (this.audio) {
-        this.audio.currentTime = 0
-        this.currentSeconds = 0
-        this.$emit('currentTimeChange', this.audio.currentTime)
-        this.audio.pause()
+    playing(value) {
+      if (value) {
+        this.timer = setInterval(() => {
+          this.currentSeconds = this.audio.currentTime
+          this.$emit('currentTimeChange', this.audio.currentTime)
+        }, 100)
+        return this.audio.play()
       }
       clearInterval(this.timer)
-    },
-    seek(e) {
-      if (!this.loaded) return
-
-      const bounds = e.target.getBoundingClientRect()
-      const seekPos = (e.clientX - bounds.left) / bounds.width
-
-      this.audio.currentTime = parseInt(this.audio.duration * seekPos)
-      this.currentSeconds = parseInt(this.audio.duration * seekPos)
-    },
-    preview(e) {
-      const bounds = e.target.getBoundingClientRect()
-      const seekPos = (e.clientX - bounds.left) / bounds.width
-
-      this.currentPosition = parseInt(this.audio.duration * seekPos)
-    },
-    padTime(time) {
-      return time.toString().padStart(2, '0')
-    },
-    mute() {
-      if (this.muted) {
-        this.volume = this.previousVolume
-      } else {
-        this.previousVolume = this.volume
-        this.volume = 0
-      }
-    },
-    download() {
       this.audio.pause()
-
-      const link = document.createElement('a')
-      link.href = this.audioSrc
-      link.download = this.audio.title
-
-      // Programmatically click the link to trigger the download
-      link.click()
     },
-
-    // -------------------------------------------
-    // INTERFACE EVENTS
-    // -------------------------------------------
-    audioTrackLoaded_evt() {
-      console.log(`Audio Loaded!`)
-      this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
-    },
-    audioFrameLoaded_evt() {
-      if (!this.audio) return
-      this.durationSeconds = Math.floor(this.audio.duration)
-
-      this.loaded = true
+    volume() {
+      this.audio.volume = this.volume / 100
     }
   },
   computed: {
@@ -239,30 +179,117 @@ export default {
       }
     }
   },
-  watch: {
-    file(value) {
-      // console.log(`in audio src watch with: ${value}`)
-      if (value) {
-        if (value != this.audioSrc) this.audioSrc = value
+  methods: {
+    // -------------------------------------------
+    // SETUP
+    // -------------------------------------------
+    loadAudio() {
+      // console.log(`in load audio: ${this.audioSrc}`)
+      if (this.audioSrc == null) return
 
-        this.loadAudio()
-      } else {
-        this.audioStatus = 'No Audio Loaded'
-      }
+      console.log(`Loading Audio: ${this.audioSrc}`)
+
+      this.audio = new Audio()
+      this.audio.src = this.audioSrc
     },
-    playing(value) {
-      if (value) {
-        this.timer = setInterval(() => {
-          this.currentSeconds = this.audio.currentTime
-          this.$emit('currentTimeChange', this.audio.currentTime)
-        }, 100)
-        return this.audio.play()
+
+    // -------------------------------------------
+    // CONTROLS
+    // -------------------------------------------
+    togglePlayback() {
+      if (!this.audio) return
+      this.playing = !this.playing
+    },
+    pauseAudio() {
+      if (!this.audio) return
+      this.playing = false
+    },
+    // Method to resume audio playing
+    resumeAudio() {
+      if (!this.audio) return
+      this.playing = true
+    },
+    stop() {
+      if (!this.audio) return
+      this.playing = false
+      if (this.audio) {
+        this.audio.currentTime = 0
+        this.currentSeconds = 0
+        this.$emit('currentTimeChange', this.audio.currentTime)
+        this.audio.pause()
       }
       clearInterval(this.timer)
-      this.audio.pause()
     },
-    volume() {
-      this.audio.volume = this.volume / 100
+    seek(e) {
+      if (!this.audio) return
+      if (!this.loaded) return
+
+      const bounds = e.target.getBoundingClientRect()
+      const seekPos = (e.clientX - bounds.left) / bounds.width
+
+      this.audio.currentTime = parseInt(this.audio.duration * seekPos)
+      this.currentSeconds = parseInt(this.audio.duration * seekPos)
+    },
+    preview(e) {
+      if (!this.audio) return
+      const bounds = e.target.getBoundingClientRect()
+      const seekPos = (e.clientX - bounds.left) / bounds.width
+
+      this.currentPosition = parseInt(this.audio.duration * seekPos)
+    },
+    padTime(time) {
+      return time.toString().padStart(2, '0')
+    },
+    mute() {
+      if (!this.audio) return
+      if (this.muted) {
+        this.volume = this.previousVolume
+      } else {
+        this.previousVolume = this.volume
+        this.volume = 0
+      }
+    },
+    download() {
+      if (!this.audio) return
+      this.audio.pause()
+
+      const link = document.createElement('a')
+      link.href = this.audioSrc
+      link.download = this.audio.title
+
+      // Programmatically click the link to trigger the download
+      link.click()
+    },
+
+    // -------------------------------------------
+    // INTERFACE EVENTS
+    // -------------------------------------------
+    audioTrackLoaded_evt() {
+      // console.log(`Audio Loaded!`)
+
+      this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
+      this.$root.$el.parentElement.dispatchEvent(
+        new CustomEvent('TranscriptionEditor_audioLoaded', {
+          detail: { status: 'success' }
+        })
+      )
+    },
+    audioFrameLoaded_evt() {
+      if (!this.audio) return
+      this.durationSeconds = Math.floor(this.audio.duration)
+
+      this.loaded = true
+    },
+    audioEnded_evt() {
+      this.stop()
+    },
+    audioError_evt() {
+      this.audioStatus = 'Failed To Load Audio'
+      this.$root.$el.parentElement.dispatchEvent(
+        new CustomEvent('TranscriptionEditor_audioLoaded', {
+          detail: { status: 'failed' }
+        })
+      )
     }
   }
 }

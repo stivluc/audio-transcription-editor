@@ -174,6 +174,43 @@ export default {
       saveAs(blob, 'finalTranscription.json')
     }
   },
+  watch: {
+    transcriptionURL(value) {
+      // console.log(`in TranscriptionURL watch with: ${value}`)
+      if (value) {
+        this.loadTranscriptions()
+      } else {
+        // remove old transcription if null (prevent memory leak)
+        this.transcription = {}
+        this.transcriptionWords = {}
+        this.transcriptionStatus = 'No Transcription Loaded'
+      }
+    },
+    isMenuOpen(value) {
+      if (value) {
+        this.pauseAudio()
+      } else {
+        this.resumeAudio()
+      }
+    },
+    currentTime() {
+      let buffer = this.transcriptionContainer_height() * 0.1
+
+      if (this.getCurrentWord_element()) {
+        let outOfBounds =
+          this.highlightedWord_offset() + buffer > this.transcriptionContainer_height() ||
+          this.highlightedWord_offset() - buffer < 0
+        if (outOfBounds) {
+          this.getCurrentWord_element().scrollIntoView({
+            //   top: this.highlightedWord_offset() - buffer,
+            behavior: 'smooth',
+            block: 'center'
+          })
+          // console.log('out of bounds, scroll to nearest word ')
+        }
+      }
+    }
+  },
   methods: {
     getCurrentWord_element() {
       return this.$refs.container.querySelector('.highlighted-word')
@@ -201,15 +238,31 @@ export default {
       this.transcriptionStatus = 'Loading Transcription...'
       axios
         // .get('/data/Sample2_Transcription.json')
-        .get(this.transcriptionURL)
+        .get(this.transcriptionURL, {
+          params: {
+            hidsGUID: this.transcriptionKey
+          }
+        })
         .then((response) => {
           const jsonData = response.data
           this.transcription = jsonData
           this.transcriptionWords = divideTranscriptionWords(jsonData)
+
+          this.$root.$el.parentElement.dispatchEvent(
+            new CustomEvent('TranscriptionEditor_transcriptionLoaded', {
+              detail: { status: 'success' }
+            })
+          )
         })
         .catch((error) => {
           console.error('Error loading transcriptions:', error)
           this.transcriptionStatus = 'Transcription Loading Failed!'
+
+          this.$root.$el.parentElement.dispatchEvent(
+            new CustomEvent('TranscriptionEditor_transcriptionLoaded', {
+              detail: { status: 'failed' }
+            })
+          )
         })
     },
     isCurrentPart(interval) {
@@ -287,14 +340,16 @@ export default {
       return JSON.stringify(reconstructedSentences, null, 2)
     },
     async exportData() {
-      console.log(`exporting to: ${this.exportURL}`)
+      // console.log(`exporting to: ${this.exportURL}`)
 
       const exportedData = this.getExportData()
 
       let uploadURL = generateURL(this.exportURL)
 
-      console.log(uploadURL)
+      // console.log(uploadURL)
 
+      // axios doesn't retain 'this' reference. so i'm cheating
+      let self = this
       axios
         .post(
           uploadURL,
@@ -310,49 +365,24 @@ export default {
           }
         )
         .then(() => {
-          alert('Transcription Edits Posted! You may return to pip!')
+          // alert('Transcription Edits Posted! You may return to pip!')
+          console.log('Transcription submit SUCCESS!')
+          self.$root.$el.parentElement.dispatchEvent(
+            new CustomEvent('TranscriptionEditor_transcriptionSubmitted', {
+              detail: { status: 'success' }
+            })
+          )
         })
         .catch(function (error) {
-          alert('There was an error posting your Transcription!')
+          // alert('There was an error posting your Transcription!')
+          console.log('Transcription submit FAILED!')
           console.log(error.toJSON())
+          self.$root.$el.parentElement.dispatchEvent(
+            new CustomEvent('TranscriptionEditor_transcriptionSubmitted', {
+              detail: { status: 'failed' }
+            })
+          )
         })
-    }
-  },
-  watch: {
-    transcriptionURL(value) {
-      // console.log(`in TranscriptionURL watch with: ${value}`)
-      if (value) {
-        this.loadTranscriptions()
-      } else {
-        // remove old transcription if null (prevent memory leak)
-        this.transcription = {}
-        this.transcriptionWords = {}
-        this.transcriptionStatus = 'No Transcription Loaded'
-      }
-    },
-    isMenuOpen(value) {
-      if (value) {
-        this.pauseAudio()
-      } else {
-        this.resumeAudio()
-      }
-    },
-    currentTime() {
-      let buffer = this.transcriptionContainer_height() * 0.1
-
-      if (this.getCurrentWord_element()) {
-        let outOfBounds =
-          this.highlightedWord_offset() + buffer > this.transcriptionContainer_height() ||
-          this.highlightedWord_offset() - buffer < 0
-        if (outOfBounds) {
-          this.getCurrentWord_element().scrollIntoView({
-            //   top: this.highlightedWord_offset() - buffer,
-            behavior: 'smooth',
-            block: 'center'
-          })
-          // console.log('out of bounds, scroll to nearest word ')
-        }
-      }
     }
   }
 }

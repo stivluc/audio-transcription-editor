@@ -14,26 +14,125 @@
         margin: 0;
         padding: 0;
         overflow: auto;
+        display:flex;
+        flex-wrap: wrap;
+      }
+
+      .sample {
+        border: 1px solid #999;
+        width:50vw;
+        height:50vh;
       }
     </style>
   </head>
   <body>
-    <div id="transcriptionApp" class="reset-styles"></div>
+    <div class="sample">
+      
+      <div id="initial" class="TranscriptionEditor reset-styles"></div>
+    </div>
+    <div class="sample">
+      <div id="transcriptionApp" class="TranscriptionEditor reset-styles"></div>
+    </div>
+    <div class="sample">
+      <div id="transcriptionApp2" class="TranscriptionEditor reset-styles"></div>
+    </div>
+    
     <script type="module" src="/src/main.js"></script>
   </body>
 
   <script>
 
-      let BROWSER_APP = document.querySelector(`#transcriptionApp`)
+// get the App Elements for mounting
+INITIAL_APP = document.querySelector(`#initial`)
+BROWSER_APP = document.querySelector(`#transcriptionApp`)
+BROWSER_APP2 = document.querySelector(`#transcriptionApp2`)
 
-      // listen for app to be ready
-      BROWSER_APP.addEventListener("TranscriptionEditor_Initialized", (evt) => {
-        console.log("app ready for events")
+// 
+AUTO_LOAD = true
+function LOAD(APP, GUID) {
+  APP.dispatchEvent(new CustomEvent('TranscriptionEditor_LoadGUID', {
+    detail: {GUID}
+  }))
+}
 
-        // Send event to set GUID
-        BROWSER_APP.dispatchEvent(new CustomEvent('TranscriptionEditor_LoadGUID', {
-          detail: {GUID: "1234567890"}
+
+// document ready
+document.addEventListener(
+  'DOMContentLoaded',
+  function () {
+    
+      /* MOUNT THE APPS TO SPECIFIED CONTAINERS */
+      console.log("Mounting App...")
+      document.dispatchEvent(new CustomEvent("TranscriptionEditor_Mount", {
+          detail: {target: INITIAL_APP}
         }))
+      // using an id selector
+      document.dispatchEvent(new CustomEvent("TranscriptionEditor_Mount", {
+          detail: {target: "#transcriptionApp"}
+        }))
+
+      // using a target element directly
+      document.dispatchEvent(new CustomEvent("TranscriptionEditor_Mount", {
+          detail: {target: BROWSER_APP2}
+        }))
+      
+
+      /* AUDIO LOADED EVENT */  
+      BROWSER_APP.addEventListener("TranscriptionEditor_audioLoaded", (evt) => {
+        console.log(`DOM_EVENT: app1 audio loaded, status:  ${evt.detail.status}`)
       })
+      BROWSER_APP2.addEventListener("TranscriptionEditor_audioLoaded", (evt) => {
+        console.log(`DOM_EVENT: app2 audio loaded, status:  ${evt.detail.status}`)
+      })
+
+
+      /* TRANSCRIPTION LOADED EVENT */
+      BROWSER_APP.addEventListener("TranscriptionEditor_transcriptionLoaded", (evt) => {
+        console.log(`DOM_EVENT: app1 transcription loaded, status: ${evt.detail.status}`)
+      })
+      BROWSER_APP2.addEventListener("TranscriptionEditor_transcriptionLoaded", (evt) => {
+        console.log(`DOM_EVENT: app2 transcription loaded, status: ${evt.detail.status}`)
+      })
+
+      /* TRANSCRIPTION SUBMITTED EVENT */
+      BROWSER_APP.addEventListener("TranscriptionEditor_transcriptionSubmitted", (evt) => {
+        console.log(`DOM_EVENT: app1 transcription submitted, status: ${evt.detail.status}`)
+      })
+      BROWSER_APP2.addEventListener("TranscriptionEditor_transcriptionSubmitted", (evt) => {
+        console.log(`DOM_EVENT: app2 transcription submitted, status: ${evt.detail.status}`)
+      })
+
+        /*  APP 1 EVENT LISTENERS */
+      // listen for app to be ready
+      console.log("Registering init listener...")
+      BROWSER_APP.addEventListener("TranscriptionEditor_Initialized", (evt) => {
+        console.log("DOM_EVENT: app1 ready for events")
+
+        // Send event to set GUID 
+        // evt.detail.APP.dispatchEvent(new CustomEvent('TranscriptionEditor_LoadGUID', {
+        //   detail: {GUID: "111111111111"}
+        // }))
+
+        if(AUTO_LOAD) LOAD(BROWSER_APP, "1111111111")
+      })
+
+      /*  APP 2 EVENT LISTENERS */
+      console.log("Registering init listener...")
+      BROWSER_APP2.addEventListener("TranscriptionEditor_Initialized", (evt) => {
+        console.log("DOM_EVENT: app2 ready for events")
+
+        // evt.detail.APP.dispatchEvent(new CustomEvent('TranscriptionEditor_LoadGUID', {
+        //   detail: {GUID: "222222222222"}
+        // }))
+        if(AUTO_LOAD) LOAD(BROWSER_APP2, "2222222222")
+        
+      }) 
+
+
+      
+      
+}) // end of document ready
+
+
   </script>
 </html>

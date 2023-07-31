@@ -54,8 +54,6 @@ export default {
     return {
       IS_DEV: true,
       currentTime: 0,
-      // AUDIO_PATH: this.CONNECTION_CONFIG + 'Yodel_Sound_Effect.mp3'
-      // AUDIO_PATH: '/data/Sample2_Audio.wav'
       CONNECTION_CONFIG: null,
       AUDIO_PATH: null,
       TRANSCRIPTION_PATH: null,
@@ -70,36 +68,22 @@ export default {
         : `TranscriptionApp_assets/connection.config.PROD.json`
 
       if (this.IS_DEV) console.log(`Using Development Configuration File.`)
-
       if (this.IS_DEV) this.TRANSCRIPTION_GUID = 'DEV'
 
       // load configuration
       let response = await axios.get(CONFIG_URL)
       this.CONNECTION_CONFIG = response.data
 
-      this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL, {
-        tranID: this.TRANSCRIPTION_GUID
-      })
-
-      this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL, {
-        hidsGUID: this.TRANSCRIPTION_GUID
-      })
-      // this.AUDIO_PATH = this.IS_DEV
-      //   ? generateURL(this.CONNECTION_CONFIG.Audio.baseURL)
-      //   : generateURL(this.CONNECTION_CONFIG.Audio.baseURL, {
-      //       tranID: this.TRANSCRIPTION_GUID
-      //     })
-
-      // this.TRANSCRIPTION_PATH = this.IS_DEV
-      //   ? generateURL(this.CONNECTION_CONFIG.Transcription.baseURL)
-      //   : generateURL(this.CONNECTION_CONFIG.Transcription.baseURL, {
-      //       hidsGUID: this.TRANSCRIPTION_GUID
-      //     })
-
-      this.EXPORT_URL = `${this.CONNECTION_CONFIG.Export.baseURL}`
+      // this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL)
+      // this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL)
+      // this.EXPORT_URL = `${this.CONNECTION_CONFIG.Export.baseURL}`
 
       // signal any listeners that the app is initialized
-      this.$el.parentElement.dispatchEvent(new Event('TranscriptionEditor_Initialized'))
+      this.$el.parentElement.dispatchEvent(
+        new CustomEvent('TranscriptionEditor_Initialized', {
+          detail: { APP: this.$el.parentElement }
+        })
+      )
     },
 
     updateCurrentTime(newValue) {
@@ -123,17 +107,18 @@ export default {
         'TranscriptionEditor_LoadGUID',
         this.DOMEvent_loadGuid
       )
-
-      // this.$el.addEventListener('LoadGUID')
     },
 
     remove_bound_events() {
       // cleanup
-      this.$el.parentElement.removeEventListener('TranscriptionEditor_LoadGUID')
+      this.$el.parentElement.removeEventListener(
+        'TranscriptionEditor_LoadGUID',
+        this.DOMEvent_loadGuid
+      )
     },
 
     DOMEvent_loadGuid(evt) {
-      console.log('Load GUID Event triggered')
+      // console.log('Load GUID Event triggered')
 
       let param_guid = evt.detail.GUID
 
