@@ -74,6 +74,7 @@ export default {
       let response = await axios.get(CONFIG_URL)
       this.CONNECTION_CONFIG = response.data
 
+      /* DONT AUTOMATICALLY LOAD PATHS */
       // this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL)
       // this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL)
       // this.EXPORT_URL = `${this.CONNECTION_CONFIG.Export.baseURL}`

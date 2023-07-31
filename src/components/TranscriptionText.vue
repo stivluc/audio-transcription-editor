@@ -233,7 +233,7 @@ export default {
     },
 
     loadTranscriptions() {
-      // console.log(`loading transcriptions: ${this.transcriptionURL}`)
+      console.log(`Loading Transcription: ${this.transcriptionURL}`)
       if (this.transcriptionURL == null) return
       this.transcriptionStatus = 'Loading Transcription...'
       axios
