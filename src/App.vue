@@ -52,7 +52,7 @@ export default {
   },
   data() {
     return {
-      IS_DEV: true,
+      IS_DEV: false,
       currentTime: 0,
       CONNECTION_CONFIG: null,
       AUDIO_PATH: null,
@@ -134,6 +134,7 @@ export default {
         hidsGUID: param_guid
       })
 
+      this.TRANSCRIPTION_GUID = param_guid
       this.EXPORT_URL = `${this.CONNECTION_CONFIG.Export.baseURL}`
     }
   }
