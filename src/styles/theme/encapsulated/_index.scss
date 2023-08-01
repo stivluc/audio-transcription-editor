@@ -14,11 +14,12 @@
   font-size: 1rem;
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
-  min-width: 600px;
+  // min-width: 600px;
   height:100%;
 }
 
 .editor{
   display:flex;
   flex-direction: column;
+  
 }

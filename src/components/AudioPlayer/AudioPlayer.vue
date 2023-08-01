@@ -4,7 +4,7 @@
       <div class="player-controls">
         <PlayButton :playing="playing" @togglePlayback="togglePlayback" />
         <StopButton @stop="stop" />
-        <div id="seek" style="width: 100%">
+        <div id="seek">
           <div class="player-timeline-wrapper">
             <div class="player-timeline">
               <div :style="progressStyle" class="player-progress"></div>
@@ -65,6 +65,7 @@
         @play="playing = true"
         @ended="audioEnded_evt"
         @error="audioError_evt"
+        type="audio/mpeg"
         preload="auto"
         style="display: none"
       ></audio>
@@ -197,7 +198,10 @@ export default {
     // CONTROLS
     // -------------------------------------------
     togglePlayback() {
-      if (!this.audio) return
+      // console.log(this.audio)
+      if (!this.audio) {
+        return
+      }
       this.playing = !this.playing
     },
     pauseAudio() {
@@ -265,7 +269,7 @@ export default {
     // INTERFACE EVENTS
     // -------------------------------------------
     audioTrackLoaded_evt() {
-      // console.log(`Audio Loaded!`)
+      // console.log(`AUDIO: audioTrackLoaded_evt fired`)
 
       this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
       this.$root.$el.parentElement.dispatchEvent(
@@ -275,15 +279,18 @@ export default {
       )
     },
     audioFrameLoaded_evt() {
+      // console.log(`AUDIO: audioFrameLoaded_evt fired`)
       if (!this.audio) return
       this.durationSeconds = Math.floor(this.audio.duration)
 
       this.loaded = true
     },
     audioEnded_evt() {
+      // console.log(`AUDIO: audioEnded_evt fired`)
       this.stop()
     },
     audioError_evt() {
+      // console.log(`AUDIO: audioError_evt fired`)
       this.audioStatus = 'Failed To Load Audio'
       this.$root.$el.parentElement.dispatchEvent(
         new CustomEvent('TranscriptionEditor_audioLoaded', {

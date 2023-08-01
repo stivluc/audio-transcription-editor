@@ -1,4 +1,71 @@
 
+$player_height: 60px;
+$player_minwidth: 460px;
 .player{
-  // height:$player_height;
+  height:$player_height;
+  min-width: $player_minwidth;
+
+  
+  .player-wrapper {
+    height: 100%;
+
+    .player-controls{
+      height: 100%;
+      align-items: center;
+      #play{
+        
+      }
+      #stop{
+        
+      }
+      #seek{
+        display:flex;
+        flex-direction: column;
+        flex:1;
+        min-width: 175px;
+
+        .player-timeline-wrapper{
+          
+
+          .player-timeline{
+            height: 1em;
+
+            .player-progress{
+
+            }
+            .player-seeker{
+
+            }
+          }
+
+        }
+        .player-time {
+          display:flex;
+          flex-direction: row;
+
+          .player-time-current{
+
+          }
+          .player-title{
+            flex:1;
+            p {
+              margin:0;
+            }
+          }
+          .player-time-total{
+
+          }
+        }
+      }
+      #volume{
+        
+      }
+      #mute{
+        
+      }
+      #download{
+        
+      }
+    }
+  }
 }
