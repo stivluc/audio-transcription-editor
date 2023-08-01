@@ -1,6 +1,7 @@
 @mixin button($color: $color_primary, $text_color: #fff) {
   @include rounded;
   @include shadow;
+  
 
   background-color: $color;
   border: 2px solid transparent;
