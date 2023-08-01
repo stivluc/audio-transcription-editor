@@ -52,7 +52,7 @@ export default {
   },
   data() {
     return {
-      IS_DEV: false,
+      IS_DEV: true,
       currentTime: 0,
       CONNECTION_CONFIG: null,
       AUDIO_PATH: null,

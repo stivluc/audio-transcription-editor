@@ -34,12 +34,8 @@ const vuetify = createVuetify({
  * }))
  */
 function mountApp_evt(evt) {
-  // console.log('MOUNTED EVT: Mounting Transcription editor.')
-
   let target = evt.detail.target || `#${NestedAppConfig.nestedAppName}`
-
   const app = createApp(App)
-  // app.use(router)
   app.use(vuetify)
   app.mount(target)
 }
@@ -47,10 +43,3 @@ function mountApp_evt(evt) {
 document
   // .querySelector(`#${NestedAppConfig.nestedAppName}`)
   .addEventListener('TranscriptionEditor_Mount', mountApp_evt)
-
-// add an event listener to the parent to signal any external Browser if listening
-// document
-//   .querySelector(`#${NestedAppConfig.nestedAppName}`)
-//   .addEventListener('TranscriptionEditor_Initialized', () => {
-//     console.log('EVT triggered: Transcription editor app is initialized')
-//   })

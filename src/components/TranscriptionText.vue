@@ -34,21 +34,21 @@
             </template>
             <v-list :min-width="180" v-show="isMenuOpen" style="border-radius: 10px">
               <div v-show="!isEditing">
-                <v-list-item>
-                  <v-btn :elevation="0" text @click="isEditing = 'add'">Add</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :elevation="0" text @click="isEditing = 'edit'">Edit</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :elevation="0" text v-if="isDeleted(index)" @click="restoreWord()"
-                    >Restore</v-btn
-                  >
-                  <v-btn :elevation="0" text v-else @click="deleteWord()">Delete</v-btn>
-                </v-list-item>
+                <div class="transcription-popover-listitem">
+                  <button :elevation="0" text @click="isEditing = 'add'">Add</button>
+                </div>
+                <div class="transcription-popover-listitem">
+                  <button :elevation="0" text @click="isEditing = 'edit'">Edit</button>
+                </div>
+                <div class="transcription-popover-listitem">
+                  <button :elevation="0" text v-if="isDeleted(index)" @click="restoreWord()">
+                    Restore
+                  </button>
+                  <button :elevation="0" text v-else @click="deleteWord()">Delete</button>
+                </div>
               </div>
               <div v-show="isEditing">
-                <v-list-item>
+                <div class="transcription-popover-listitem">
                   <v-text-field
                     :label="isEditing === 'add' ? 'New word' : 'Modification'"
                     hide-details="auto"
@@ -56,7 +56,7 @@
                     v-on:keydown.enter="isEditing === 'add' ? addWord($event) : editWord($event)"
                     autofocus
                   />
-                </v-list-item>
+                </div>
               </div>
             </v-list>
           </v-menu>
