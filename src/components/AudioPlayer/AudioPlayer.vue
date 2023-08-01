@@ -55,7 +55,8 @@
         </div>
         <DownloadButton @download="download" v-show="!showVolume" />
       </div>
-      <audio
+      <div class="audio_dump">
+        <!-- <audio
         v-if="this.audioSrc"
         ref="audio"
         :src="audioSrc"
@@ -68,7 +69,8 @@
         type="audio/mpeg"
         preload="auto"
         style="display: none"
-      ></audio>
+      ></audio> -->
+      </div>
     </div>
   </div>
 </template>
@@ -80,6 +82,7 @@ import DownloadButton from './DownloadButton.vue'
 import MuteIcon from '../icons/MuteIcon.vue'
 import UnmuteIcon from '../icons/UnmuteIcon.vue'
 import VolumeIcon from '../icons/VolumeIcon.vue'
+import axios from 'axios'
 
 export default {
   components: {
@@ -188,10 +191,54 @@ export default {
       // console.log(`in load audio: ${this.audioSrc}`)
       if (this.audioSrc == null) return
 
-      console.log(`Loading Audio: ${this.audioSrc}`)
+      // console.log(`Loading Audio: ${this.audioSrc}`)
 
-      this.audio = new Audio()
-      this.audio.src = this.audioSrc
+      // ADD IN AN AJAX CALL HERE FOR THE SOURCE THEN SET THE AUDIO ELEMENT
+      axios(this.audioSrc, {
+        responseType: 'arraybuffer',
+        headers: {
+          'Content-Type': 'audio/mpeg'
+        }
+      })
+        .then((res) => {
+          // console.log('Audio axios success!')
+          // console.log(res)
+
+          let blob = new Blob([res.data])
+
+          // console.log(blob)
+
+          let url = URL.createObjectURL(blob)
+          // console.log(url)
+
+          if (this.audio) this.audio.remove()
+
+          this.audio = new Audio()
+          this.audio.src = url
+
+          this.audio.addEventListener('durationchange', this.audioTrackLoaded_evt)
+          this.audio.addEventListener('loadeddata', this.audioFrameLoaded_evt)
+          this.audio.addEventListener('ended', this.audioEnded_evt)
+          this.audio.addEventListener('error', this.audioError_evt)
+          this.audio.addEventListener('play', () => {
+            this.playing = true
+          })
+          this.audio.addEventListener('pause', () => {
+            this.playing = false
+          })
+
+          this.$el.querySelector('.audio_dump').append(this.audio)
+          // console.log(this.audio)
+          // this.EMIT_Status_Event('TranscriptionEditor_audioLoaded', 'success')
+        })
+        .catch((err) => {
+          // console.log('Audio axios error!', err)
+
+          this.EMIT_Status_Event('TranscriptionEditor_audioLoaded', 'failed')
+        })
+
+      // this.audio = new Audio()
+      // this.audio.src = this.audioSrc
     },
 
     // -------------------------------------------
@@ -272,11 +319,7 @@ export default {
       // console.log(`AUDIO: audioTrackLoaded_evt fired`)
 
       this.title = this.audioSrc.substring(this.audioSrc.lastIndexOf('/') + 1)
-      this.$root.$el.parentElement.dispatchEvent(
-        new CustomEvent('TranscriptionEditor_audioLoaded', {
-          detail: { status: 'success' }
-        })
-      )
+      this.EMIT_Status_Event('TranscriptionEditor_audioLoaded', 'success')
     },
     audioFrameLoaded_evt() {
       // console.log(`AUDIO: audioFrameLoaded_evt fired`)
@@ -292,9 +335,14 @@ export default {
     audioError_evt() {
       // console.log(`AUDIO: audioError_evt fired`)
       this.audioStatus = 'Failed To Load Audio'
+
+      this.EMIT_Status_Event('TranscriptionEditor_audioLoaded', 'failed')
+    },
+
+    EMIT_Status_Event(event_name, status) {
       this.$root.$el.parentElement.dispatchEvent(
-        new CustomEvent('TranscriptionEditor_audioLoaded', {
-          detail: { status: 'failed' }
+        new CustomEvent(event_name, {
+          detail: { status: status }
         })
       )
     }

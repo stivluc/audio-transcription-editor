@@ -233,7 +233,7 @@ export default {
     },
 
     loadTranscriptions() {
-      console.log(`Loading Transcription: ${this.transcriptionURL}`)
+      // console.log(`Loading Transcription: ${this.transcriptionURL}`)
       if (this.transcriptionURL == null) return
       this.transcriptionStatus = 'Loading Transcription...'
       axios
@@ -366,7 +366,7 @@ export default {
         )
         .then(() => {
           // alert('Transcription Edits Posted! You may return to pip!')
-          console.log('Transcription submit SUCCESS!')
+          // console.log('Transcription submit SUCCESS!')
           self.$root.$el.parentElement.dispatchEvent(
             new CustomEvent('TranscriptionEditor_transcriptionSubmitted', {
               detail: { status: 'success' }
@@ -375,8 +375,8 @@ export default {
         })
         .catch(function (error) {
           // alert('There was an error posting your Transcription!')
-          console.log('Transcription submit FAILED!')
-          console.log(error.toJSON())
+          // console.log('Transcription submit FAILED!')
+          // console.log(error.toJSON())
           self.$root.$el.parentElement.dispatchEvent(
             new CustomEvent('TranscriptionEditor_transcriptionSubmitted', {
               detail: { status: 'failed' }
