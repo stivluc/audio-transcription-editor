@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       // load if this is development mode from the env files
-      IS_DEV: import.meta.env.VITE_IS_DEV,
+      IS_DEV: import.meta.env.VITE_IS_DEV == 'true',
 
       currentTime: 0,
       CONNECTION_CONFIG: null,
@@ -72,8 +72,7 @@ export default {
       //   : `TranscriptionApp_assets/connection.config.PROD.json`
 
       let CONFIG_URL = import.meta.env.VITE_CONNECTION_CONFIG
-      // console.log('IS DEV: ', this.IS_DEV)
-      // console.log('config url: ', CONFIG_URL)
+
       if (this.IS_DEV) console.log(`Using Development Configuration File.`)
       if (this.IS_DEV) this.TRANSCRIPTION_GUID = 'DEV'
 
