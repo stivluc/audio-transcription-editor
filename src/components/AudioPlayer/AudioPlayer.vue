@@ -23,7 +23,7 @@
 
             <!-- show status message until title is available -->
             <div class="player-title">
-              <p v-if="title != ''">{{ title }}</p>
+              <p v-if="title != ''">{{ trackTitle }}</p>
               <p v-else>{{ this.audioStatus }}</p>
             </div>
             <div class="player-time-total">{{ formattedDuration }}</div>
@@ -95,6 +95,10 @@ export default {
   },
   props: {
     file: {
+      type: String,
+      default: null
+    },
+    trackTitle: {
       type: String,
       default: null
     },

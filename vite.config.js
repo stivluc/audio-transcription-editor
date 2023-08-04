@@ -11,7 +11,7 @@ import NestedAppConfig from './NestedApp.config.json'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), vueJsx(), cssInjectedByJsPlugin()],
-
+  envDir: './env',
   // modify naming of output to remove hashes
   build: {
     rollupOptions: {

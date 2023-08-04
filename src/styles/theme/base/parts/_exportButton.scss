@@ -17,7 +17,8 @@ $player-link-color: #444;
   max-width: 100%;
   width: fit-content;
   color: $player-link-color;
-
+  cursor: pointer;
+  
   &:hover {
     transition: all 0.3s ease-in-out;
     background-color: darken($background-mid, 10%);

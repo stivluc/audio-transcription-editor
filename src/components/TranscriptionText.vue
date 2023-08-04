@@ -67,7 +67,7 @@
   <div class="export-container">
     <div></div>
     <button class="export-button" @click="exportData">
-      <span> Finalize </span>
+      <span> Save </span>
     </button>
   </div>
 </template>

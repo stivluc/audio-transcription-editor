@@ -2,6 +2,7 @@
   <div class="editor">
     <audio-player
       :file="AUDIO_PATH"
+      :trackTitle="AUDIO_TITLE"
       ref="audioPlayer"
       @currentTimeChange="updateCurrentTime"
       @pause-audio="pauseAudio"
@@ -52,10 +53,13 @@ export default {
   },
   data() {
     return {
-      IS_DEV: true,
+      // load if this is development mode from the env files
+      IS_DEV: import.meta.env.VITE_IS_DEV,
+
       currentTime: 0,
       CONNECTION_CONFIG: null,
       AUDIO_PATH: null,
+      AUDIO_TITLE: null,
       TRANSCRIPTION_PATH: null,
       TRANSCRIPTION_GUID: null,
       EXPORT_URL: null
@@ -63,10 +67,13 @@ export default {
   },
   methods: {
     async init() {
-      let CONFIG_URL = this.IS_DEV
-        ? `TranscriptionApp_assets/connection.config.DEV.json`
-        : `TranscriptionApp_assets/connection.config.PROD.json`
+      // let CONFIG_URL = this.IS_DEV
+      //   ? `TranscriptionApp_assets/connection.config.DEV.json`
+      //   : `TranscriptionApp_assets/connection.config.PROD.json`
 
+      let CONFIG_URL = import.meta.env.VITE_CONNECTION_CONFIG
+      // console.log('IS DEV: ', this.IS_DEV)
+      // console.log('config url: ', CONFIG_URL)
       if (this.IS_DEV) console.log(`Using Development Configuration File.`)
       if (this.IS_DEV) this.TRANSCRIPTION_GUID = 'DEV'
 
@@ -122,6 +129,7 @@ export default {
       // console.log('Load GUID Event triggered')
 
       let param_guid = evt.detail.GUID
+      let param_title = evt.detail.title || ''
 
       this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL)
       this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL)
@@ -129,6 +137,7 @@ export default {
       this.AUDIO_PATH = generateURL(this.CONNECTION_CONFIG.Audio.baseURL, {
         tranID: param_guid
       })
+      this.AUDIO_TITLE = param_title
 
       this.TRANSCRIPTION_PATH = generateURL(this.CONNECTION_CONFIG.Transcription.baseURL, {
         hidsGUID: param_guid

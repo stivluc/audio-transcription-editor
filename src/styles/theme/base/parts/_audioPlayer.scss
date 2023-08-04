@@ -138,14 +138,14 @@ $player-timeline-color: $player-border-color;
       animation: slide-x 10s linear infinite;
       white-space: nowrap;
 
-      @keyframes slide-x {
-        0% {
-          transform: translateX(100%);
-        }
-        100% {
-          transform: translateX(-100%);
-        }
-      }
+      // @keyframes slide-x {
+      //   0% {
+      //     transform: translateX(100%);
+      //   }
+      //   100% {
+      //     transform: translateX(-100%);
+      //   }
+      // }
     }
   }
 

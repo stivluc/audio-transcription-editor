@@ -49,9 +49,12 @@ BROWSER_APP2 = document.querySelector(`#transcriptionApp2`)
 
 // 
 AUTO_LOAD = true
-function LOAD(APP, GUID) {
+function LOAD(APP, GUID, title) {
   APP.dispatchEvent(new CustomEvent('TranscriptionEditor_LoadGUID', {
-    detail: {GUID}
+    detail: {
+      GUID,
+      title
+    }
   }))
 }
 
@@ -113,7 +116,7 @@ document.addEventListener(
         //   detail: {GUID: "111111111111"}
         // }))
 
-        if(AUTO_LOAD) LOAD(BROWSER_APP, "1111111111")
+        if(AUTO_LOAD) LOAD(BROWSER_APP, "1111111111", "App 1")
       })
 
       /*  APP 2 EVENT LISTENERS */
@@ -124,7 +127,7 @@ document.addEventListener(
         // evt.detail.APP.dispatchEvent(new CustomEvent('TranscriptionEditor_LoadGUID', {
         //   detail: {GUID: "222222222222"}
         // }))
-        if(AUTO_LOAD) LOAD(BROWSER_APP2, "2222222222")
+        if(AUTO_LOAD) LOAD(BROWSER_APP2, "2222222222", "App 2")
         
       }) 
 
