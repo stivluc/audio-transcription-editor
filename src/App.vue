@@ -91,6 +91,11 @@ export default {
           detail: { APP: this.$el.parentElement }
         })
       )
+
+      // add event listener to force pausing audio
+      this.$el.parentElement.addEventListener('TranscriptionEditor_StopAudio', (evt) => {
+        this.pauseAudio()
+      })
     },
 
     updateCurrentTime(newValue) {
