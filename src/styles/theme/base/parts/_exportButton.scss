@@ -1,47 +1,53 @@
 $player-border-color: darken(#fff, 12%);
 $player-link-color: #444;
 
-.export-container {
+.transcription-controls-container {
   display: flex;
   justify-content: space-between;
 }
 
-.export-button {
+.transcription-control {
   background-color: $background-mid;
   border-radius: 1rem;
   padding: 1rem 2rem;
   margin: 0rem 2rem 2rem;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
   border: 1px solid darken(#fff, 12%);
-  height: fit-content;
+  //   height: fit-content;
+  height: auto;
   max-width: 100%;
   width: fit-content;
   color: $player-link-color;
   cursor: pointer;
-  
+  font-size: large;
+
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #2e2e2e;
+  font-weight: 600;
+
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+
+  &:last-child {
+    margin-right: 2em;
+  }
+
   &:hover {
     transition: all 0.3s ease-in-out;
     background-color: darken($background-mid, 10%);
     box-shadow: 0 5px 8px rgba(0, 0, 0, 0.25);
   }
 
-  span {
-    font-size: large;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
+  @media screen and (max-width: 600px) {
+    font-size: medium;
+  }
+
+  svg {
+    font-size: 1.5em;
     color: #2e2e2e;
-
-    @media screen and (max-width: 600px) {
-      font-size: medium;
-    }
-
-    svg {
-      color: #2e2e2e;
-      width: 1.4rem;
-      margin-bottom: 0.2rem;
-    }
+    width: 1.4rem;
+    margin-bottom: 0.2rem;
   }
 
   @media screen and (max-width: 600px) {

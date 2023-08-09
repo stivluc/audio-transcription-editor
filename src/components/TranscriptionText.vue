@@ -64,11 +64,12 @@
       </div>
     </div>
   </div>
-  <div class="export-container">
-    <div></div>
-    <button class="export-button" @click="exportData">
-      <span> Save </span>
+  <div class="transcription-controls-container">
+    <button class="transcription-control" @click="copyText_evt">
+      <ClipboardIcon></ClipboardIcon> {{ copyText }}
     </button>
+
+    <button class="transcription-control save" @click="exportData">Save</button>
   </div>
 </template>
 
@@ -76,6 +77,7 @@
 import axios from 'axios'
 import { generateURL } from '@/utils/URL_Utils.js'
 import { saveAs } from 'file-saver'
+import ClipboardIcon from './icons/ClipboardIcon.vue'
 
 function divideTranscriptionWords(transcription) {
   const transcriptionWords = {}
@@ -142,7 +144,6 @@ export default {
       type: String,
       default: null
     },
-
     exportURL: {
       type: String,
       default: null
@@ -160,12 +161,14 @@ export default {
       transcriptionStatus: 'No Transcription Loaded',
       popoverIndex: null,
       isEditing: false,
-      isMenuOpen: false
+      isMenuOpen: false,
+
+      // not the best implementation, but short on time
+      copyText: 'Copy To Clipboard'
     }
   },
   mounted() {
     this.loadTranscriptions()
-
     // define method of manual download of transcription data
     document.MANUAL_TRANSCRIPT_DOWNLOAD = () => {
       // Open the file save dialog
@@ -195,7 +198,6 @@ export default {
     },
     currentTime() {
       let buffer = this.transcriptionContainer_height() * 0.1
-
       if (this.getCurrentWord_element()) {
         let outOfBounds =
           this.highlightedWord_offset() + buffer > this.transcriptionContainer_height() ||
@@ -215,7 +217,6 @@ export default {
     getCurrentWord_element() {
       return this.$refs.container.querySelector('.highlighted-word')
     },
-
     highlightedWord_offset() {
       let currentWord = this.getCurrentWord_element()
       let offset = 0
@@ -224,14 +225,11 @@ export default {
         let word_offset = this.getCurrentWord_element().getBoundingClientRect().top
         offset = word_offset - container_offset
       }
-
       return offset
     },
-
     transcriptionContainer_height() {
       return this.$refs.container.offsetHeight
     },
-
     loadTranscriptions() {
       // console.log(`Loading Transcription: ${this.transcriptionURL}`)
       if (this.transcriptionURL == null) return
@@ -247,7 +245,6 @@ export default {
           const jsonData = response.data
           this.transcription = jsonData
           this.transcriptionWords = divideTranscriptionWords(jsonData)
-
           this.$root.$el.parentElement.dispatchEvent(
             new CustomEvent('TranscriptionEditor_transcriptionLoaded', {
               detail: { status: 'success' }
@@ -257,7 +254,6 @@ export default {
         .catch((error) => {
           console.error('Error loading transcriptions:', error)
           this.transcriptionStatus = 'Transcription Loading Failed!'
-
           this.$root.$el.parentElement.dispatchEvent(
             new CustomEvent('TranscriptionEditor_transcriptionLoaded', {
               detail: { status: 'failed' }
@@ -285,10 +281,8 @@ export default {
         const start = previousInterval[0] + timePeriodDifference / 2
         const end = previousInterval[1]
         const newTimePeriod = [start, end]
-
         // Update the time_period of the clicked word
         this.transcriptionWords[this.popoverIndex].time_period = [previousInterval[0], start]
-
         // Insert the new word with the adjusted time_period
         this.transcriptionWords.splice(this.popoverIndex + 1, 0, {
           Init: '',
@@ -330,24 +324,18 @@ export default {
     resumeAudio() {
       this.$emit('resume-audio')
     },
-
     getExportData() {
       const reconstructedSentences = reconstructSentences(
         this.transcription,
         this.transcriptionWords.filter((word) => word.Corrected.trim() !== '') // Remove deleted words
       )
-
       return JSON.stringify(reconstructedSentences, null, 2)
     },
     async exportData() {
       // console.log(`exporting to: ${this.exportURL}`)
-
       const exportedData = this.getExportData()
-
       let uploadURL = generateURL(this.exportURL)
-
       // console.log(uploadURL)
-
       // axios doesn't retain 'this' reference. so i'm cheating
       let self = this
       axios
@@ -383,7 +371,34 @@ export default {
             })
           )
         })
+    },
+
+    getCurrentText() {
+      let raw_text_string = this.transcriptionWords
+        .filter((word) => word.Corrected.trim() !== '')
+        .map((word) => word.Corrected || word.Init)
+        .join(' ')
+
+      return raw_text_string
+    },
+
+    copyText_evt(evt) {
+      console.log('copy text event')
+
+      console.log(evt.target.classList)
+      evt.target.classList.add('copied')
+      this.copyText = 'Copied!'
+
+      let formattedText = this.getCurrentText()
+      // write the formatted text to the clipboard
+      navigator.clipboard.writeText(formattedText)
+
+      setTimeout(() => {
+        evt.target.classList.remove('copied')
+        this.copyText = 'Copy to Clipboard'
+      }, 3000)
     }
-  }
+  },
+  components: { ClipboardIcon }
 }
 </script>
