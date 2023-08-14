@@ -13,11 +13,17 @@
           :key="index"
           :class="['transcription-word', { 'current-word': isCurrentPart(word.time_period) }]"
         >
-          <v-menu :close-on-content-click="false" bottom content-class="transcription-popover">
+          <v-menu
+            v-model="shownModals[index]"
+            :close-on-content-click="false"
+            bottom
+            content-class="transcription-popover"
+          >
             <template v-slot:activator="{ props }">
               <span
                 v-bind="props"
-                @click="setIndex(index)"
+                @click="wordClicked_evt"
+                :data-wordID="index"
                 :class="[
                   {
                     'highlighted-word': isCurrentPart(word.time_period),
@@ -32,7 +38,11 @@
               <span v-if="word.Corrected !== word.Init" class="previous-word">{{ word.Init }}</span>
               <span class="space">{{ ' ' }}</span>
             </template>
-            <v-list :min-width="180" v-show="isMenuOpen" style="border-radius: 10px">
+            <v-list
+              :min-width="180"
+              v-show="index == selectedWordIndex"
+              style="border-radius: 10px"
+            >
               <div v-show="!isEditing">
                 <div class="transcription-popover-listitem">
                   <button :elevation="0" text @click="isEditing = 'add'">Add</button>
@@ -53,7 +63,7 @@
                     :label="isEditing === 'add' ? 'New word' : 'Modification'"
                     hide-details="auto"
                     ref="editTextField"
-                    v-on:keydown.enter="isEditing === 'add' ? addWord($event) : editWord($event)"
+                    v-on:keydown.enter="editorSubmission_evt"
                     autofocus
                   />
                 </div>
@@ -161,10 +171,12 @@ export default {
       transcription: {},
       transcriptionWords: {},
       transcriptionStatus: 'No Transcription Loaded',
-      popoverIndex: null,
-      isEditing: false,
-      isMenuOpen: false,
 
+      shownModals: {},
+
+      selectedWordIndex: null,
+      isEditing: null,
+      focusMenu: false,
       // not the best implementation, but short on time
       copyText: 'Copy To Clipboard'
     }
@@ -180,6 +192,25 @@ export default {
     }
   },
   watch: {
+    // need to map a shown value to each menu to catch the open/close events
+    shownModals: {
+      handler(newValue) {
+        // set active menu
+
+        // if any active modals
+        if (Object.keys(newValue).some((key) => newValue[key])) {
+          this.isEditing = null
+          this.focusMenu = true
+
+          // this.pauseAudio()
+        } else {
+          this.focusMenu = false
+          // this.resumeAudio()
+        }
+      },
+      deep: true
+    },
+
     transcriptionURL(value) {
       // console.log(`in TranscriptionURL watch with: ${value}`)
       if (value) {
@@ -191,13 +222,15 @@ export default {
         this.transcriptionStatus = 'No Transcription Loaded'
       }
     },
-    isMenuOpen(value) {
-      if (value) {
+
+    focusMenu(value) {
+      if (value == true) {
         this.pauseAudio()
       } else {
         this.resumeAudio()
       }
     },
+
     currentTime() {
       let buffer = this.transcriptionContainer_height() * 0.1
       if (this.getCurrentWord_element()) {
@@ -216,6 +249,18 @@ export default {
     }
   },
   methods: {
+    editorSubmission_evt(evt) {
+      if (this.isEditing === 'add') {
+        this.addWord(evt)
+      } else {
+        this.editWord(evt)
+      }
+
+      this.focusMenu = false
+    },
+    wordClicked_evt(evt) {
+      this.setIndex(evt.target.getAttribute('data-wordID'))
+    },
     getCurrentWord_element() {
       return this.$refs.container.querySelector('.highlighted-word')
     },
@@ -268,55 +313,63 @@ export default {
       const end = interval[1]
       return this.currentTime >= start && this.currentTime < end && this.currentTime > 0
     },
+
     setIndex(index) {
-      this.popoverIndex = index
-      setTimeout(() => {
-        this.isEditing = false
-        this.isMenuOpen = true
-      }, 100)
+      // console.log('in setIndex', index)
+      this.selectedWordIndex = parseInt(index)
+
+      // setTimeout(() => {
+      //   console.log('running setIndex timeout')
+      //   this.isEditing = false
+      //   // this.isMenuOpen = true
+      // }, 100)
     },
     addWord(event) {
       const newWord = event.target.value
       if (newWord) {
-        const previousInterval = this.transcriptionWords[this.popoverIndex].time_period
+        const previousInterval = this.transcriptionWords[this.selectedWordIndex].time_period
         const timePeriodDifference = previousInterval[1] - previousInterval[0]
         const start = previousInterval[0] + timePeriodDifference / 2
         const end = previousInterval[1]
         const newTimePeriod = [start, end]
+
         // Update the time_period of the clicked word
-        this.transcriptionWords[this.popoverIndex].time_period = [previousInterval[0], start]
+        this.transcriptionWords[this.selectedWordIndex].time_period = [previousInterval[0], start]
         // Insert the new word with the adjusted time_period
-        this.transcriptionWords.splice(this.popoverIndex + 1, 0, {
+        this.transcriptionWords.splice(this.selectedWordIndex + 1, 0, {
           Init: '',
           time_period: newTimePeriod,
           Corrected: newWord
         })
       }
-      this.isMenuOpen = false
-      this.isEditing = null
-      this.popoverIndex = null
+      // this.isMenuOpen = false
+      // this.isEditing = null
+      this.selectedWordIndex = null
     },
     editWord(event) {
       const modifiedWord = event.target.value
       if (modifiedWord) {
-        this.transcriptionWords[this.popoverIndex].Corrected = modifiedWord
+        this.transcriptionWords[this.selectedWordIndex].Corrected = modifiedWord
       }
-      this.isMenuOpen = false
-      this.popoverIndex = null
+      // this.isMenuOpen = false
+      this.selectedWordIndex = null
     },
     deleteWord() {
-      this.transcriptionWords[this.popoverIndex].Corrected = ''
-      this.isMenuOpen = false
-      this.popoverIndex = null
+      this.transcriptionWords[this.selectedWordIndex].Corrected = ''
+      // this.isMenuOpen = false
+      this.selectedWordIndex = null
+
+      this.focusMenu = false
     },
     isDeleted(index) {
       return this.transcriptionWords[index]?.Corrected === '' || false
     },
     restoreWord() {
-      this.transcriptionWords[this.popoverIndex].Corrected =
-        this.transcriptionWords[this.popoverIndex].Init
-      this.isMenuOpen = false
-      this.popoverIndex = null
+      this.transcriptionWords[this.selectedWordIndex].Corrected =
+        this.transcriptionWords[this.selectedWordIndex].Init
+      // this.isMenuOpen = false
+      this.selectedWordIndex = null
+      this.focusMenu = false
     },
     // Emit an event to pause the audio when clicking on a word
     pauseAudio() {
@@ -369,7 +422,7 @@ export default {
           // console.log(error.toJSON())
           self.$root.$el.parentElement.dispatchEvent(
             new CustomEvent('TranscriptionEditor_transcriptionSubmitted', {
-              detail: { status: 'failed' }
+              detail: { status: 'failed', error }
             })
           )
         })
@@ -385,9 +438,6 @@ export default {
     },
 
     copyText_evt(evt) {
-      console.log('copy text event')
-
-      console.log(evt.target.classList)
       evt.target.classList.add('copied')
       this.copyText = 'Copied!'
 
